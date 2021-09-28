@@ -20,6 +20,7 @@ import UIKit
 //[] Trailer 的顯示 size 會跟 thumbnail 完全一致 & 重疊。
 //[] 當 trailer 播放完畢之後，播放畫面會停止，且正中間會有一個 Replay 按鈕，用戶可以選點此按鈕以重播此 trailer。
 //[] Preview 功能的 Progress bar 的右方，會有此部 trailer 的倒數秒數，並會隨著播放而逐漸減少秒數。
+//[] Check iOS 11~15
 
 public class TrailerPlayerView: UIView {
     
