@@ -21,8 +21,8 @@ import UIKit
 //[] 當 trailer 播放完畢之後，播放畫面會停止，且正中間會有一個 Replay 按鈕，用戶可以選點此按鈕以重播此 trailer。
 //[] Preview 功能的 Progress bar 的右方，會有此部 trailer 的倒數秒數，並會隨著播放而逐漸減少秒數。
 //[] Check iOS 11~15
-//[] Background playbback
-//[] Remote Control Center
+//[] 不可背景播放，當從背景回到前景時，要繼續播放
+//[] 不可在 Remote Control Center 裡顯示資訊
 
 public protocol TrailerPlayerViewDelegate: AnyObject {
     func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView)
