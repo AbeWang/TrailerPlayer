@@ -21,8 +21,22 @@ import UIKit
 //[] 當 trailer 播放完畢之後，播放畫面會停止，且正中間會有一個 Replay 按鈕，用戶可以選點此按鈕以重播此 trailer。
 //[] Preview 功能的 Progress bar 的右方，會有此部 trailer 的倒數秒數，並會隨著播放而逐漸減少秒數。
 //[] Check iOS 11~15
+//[] Background playbback
+//[] Remote Control Center
+
+public protocol TrailerPlayerViewDelegate: AnyObject {
+    func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView)
+    func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval)
+}
 
 public class TrailerPlayerView: UIView {
+    
+    public enum Status {
+        case playing
+        case pause
+        case waitingToPlay
+        case unknown
+    }
     
     @AutoLayout
     private var loadingIndicator: UIActivityIndicatorView = {
@@ -40,10 +54,30 @@ public class TrailerPlayerView: UIView {
         return view
     }()
     
+    weak var delegate: TrailerPlayerViewDelegate?
+    
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
+    private var currentPlayingItem: TrailerPlayerItem?
     
-    public private(set) var currentPlayingItem: TrailerPlayerItem?
+    public var isMuted: Bool {
+        player?.isMuted ?? true
+    }
+    
+    public var duration: TimeInterval {
+        guard let time = player?.currentItem?.duration else { return 0 }
+        return CMTimeGetSeconds(time)
+    }
+    
+    public var status: Status {
+        guard let status = player?.timeControlStatus else { return .unknown }
+        switch status {
+        case .playing: return .playing
+        case .paused: return .pause
+        case .waitingToPlayAtSpecifiedRate: return .waitingToPlay
+        default: return .unknown
+        }
+    }
     
     public init() {
         super.init(frame: CGRect.zero)
@@ -97,19 +131,31 @@ public extension TrailerPlayerView {
             if item.autoPlay {
                 player?.play()
             }
+            
+            player?.isMuted = item.mute
         }
     }
     
     func play() {
-        
+        player?.play()
     }
     
     func pause() {
-        
+        player?.pause()
+    }
+    
+    func replay() {
+        player?.seek(to: CMTime.zero)
+        player?.play()
+    }
+    
+    func seek(to time: TimeInterval) {
+        player?.seek(to: CMTimeMakeWithSeconds(time, preferredTimescale: Int32(NSEC_PER_SEC)))
     }
     
     func toggleMute() {
-        
+        guard let player = player else { return }
+        player.isMuted = !player.isMuted
     }
     
     func toggleFullscreen() {
@@ -154,6 +200,15 @@ private extension TrailerPlayerView {
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
         
         player = AVPlayer(playerItem: playerItem)
+        player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(0.1, preferredTimescale: Int32(NSEC_PER_SEC)), queue: DispatchQueue.main) { [weak self] _ in
+            guard
+                let self = self,
+                let player = self.player,
+                player.timeControlStatus == .playing
+            else { return }
+            
+            self.delegate?.trailerPlayerView(self, didUpdatePlaybackTime: CMTimeGetSeconds(player.currentTime()))
+        }
         
         playerLayer = AVPlayerLayer(player: player)
         layer.addSublayer(playerLayer!)
@@ -176,6 +231,12 @@ private extension TrailerPlayerView {
     }
     
     @objc func playerDidEndPlaying() {
-        // TODO: Replay icon
+        guard let item = currentPlayingItem else { return }
+        
+        if item.autoReplay {
+            replay()
+        } else {
+            delegate?.trailerPlayerViewDidEndPlaying(self)
+        }
     }
 }

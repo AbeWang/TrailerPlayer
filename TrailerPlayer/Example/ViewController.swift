@@ -55,23 +55,35 @@ class ViewController: UIViewController {
         return label
     }()
     
+    @AutoLayout
+    private var progressView: UISlider = {
+        let view = UISlider()
+        view.isContinuous = false
+        view.value = 0.0
+        view.minimumValue = 0.0
+        return view
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .white
         
         view.addSubview(playerView)
+        playerView.delegate = self
         playerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         playerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         playerView.heightAnchor.constraint(equalTo: playerView.widthAnchor, multiplier: 0.65).isActive = true
         
         view.addSubview(muteButton)
+        muteButton.addTarget(self, action: #selector(didTapMute), for: .touchUpInside)
         muteButton.topAnchor.constraint(equalTo: playerView.bottomAnchor, constant: 20.0).isActive = true
         muteButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         muteButton.widthAnchor.constraint(equalToConstant: 150.0).isActive = true
         muteButton.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
         
         view.addSubview(playPauseButton)
+        playPauseButton.addTarget(self, action: #selector(didTapPlayPause), for: .touchUpInside)
         playPauseButton.topAnchor.constraint(equalTo: muteButton.bottomAnchor, constant: 20.0).isActive = true
         playPauseButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         playPauseButton.widthAnchor.constraint(equalToConstant: 150.0).isActive = true
@@ -90,9 +102,61 @@ class ViewController: UIViewController {
         countDownLabel.widthAnchor.constraint(equalToConstant: 300.0).isActive = true
         countDownLabel.heightAnchor.constraint(equalToConstant: 80.0).isActive = true
         
+        view.addSubview(progressView)
+        progressView.addTarget(self, action: #selector(didChangePlaybackTime), for: .valueChanged)
+        progressView.addTarget(self, action: #selector(didTouchProgress), for: .touchDown)
+        progressView.topAnchor.constraint(equalTo: countDownLabel.bottomAnchor, constant: 20.0).isActive = true
+        progressView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        progressView.widthAnchor.constraint(equalToConstant: 300.0).isActive = true
+        
         let item = TrailerPlayerItem(
             url: URL(string: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"),
             thumbnailUrl: URL(string: "https://img.ltn.com.tw/Upload/news/600/2019/03/30/phpUCF6ub.jpg"))
         playerView.set(item: item)
     }
+}
+
+extension ViewController {
+    
+    @objc func didTapMute() {
+        playerView.toggleMute()
+    }
+    
+    @objc func didTapPlayPause() {
+        if playerView.status == .playing {
+            playerView.pause()
+        } else {
+            playerView.play()
+        }
+    }
+    
+    @objc func didChangePlaybackTime() {
+        playerView.seek(to: TimeInterval(progressView.value))
+        playerView.play()
+    }
+    
+    @objc func didTouchProgress() {
+        playerView.pause()
+    }
+    
+}
+
+extension ViewController: TrailerPlayerViewDelegate {
+    
+    func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView) {
+        let controller = UIAlertController(title: "End", message: nil, preferredStyle: .alert)
+        controller.addAction(UIAlertAction(title: "Replay", style: .default, handler: { _ in
+            view.replay()
+        }))
+        controller.addAction(UIAlertAction(title: "Close", style: .cancel, handler: nil))
+        present(controller, animated: true, completion: nil)
+    }
+    
+    func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval) {
+        countDownLabel.text = "Countdown timer:\n \(Int(playerView.duration - time))"
+        
+        progressView.value = Float(time)
+        progressView.maximumValue = Float(playerView.duration)
+    }
+    
 }
