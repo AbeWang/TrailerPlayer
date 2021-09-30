@@ -43,6 +43,11 @@ public class TrailerPlayerView: UIView {
         case unknown
     }
     
+    static var fullscreenEnabled: Bool {
+        let view = UIApplication.shared.keyWindow?.subviews.last
+        return view is TrailerPlayerView
+    }
+    
     @AutoLayout
     private var loadingIndicator: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView()
@@ -248,6 +253,25 @@ private extension TrailerPlayerView {
         
         playerLayer?.removeFromSuperlayer()
         playerLayer = nil
+    }
+    
+    func layout(view: UIView, into: UIView, animated: Bool = true) {
+        guard view.superview == nil else { return }
+        
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.alpha = 0
+        
+        into.addSubview(view)
+        
+        let duration = animated ? 0.25: 0.0
+        UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseOut) {
+            view.topAnchor.constraint(equalTo: into.topAnchor).isActive = true
+            view.leftAnchor.constraint(equalTo: into.leftAnchor).isActive = true
+            view.rightAnchor.constraint(equalTo: into.rightAnchor).isActive = true
+            view.bottomAnchor.constraint(equalTo: into.bottomAnchor).isActive = true
+            view.alpha = 1
+            view.layoutIfNeeded()
+        } completion: { _ in }
     }
     
     @objc func playerDidEndPlaying() {
