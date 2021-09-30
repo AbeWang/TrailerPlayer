@@ -23,6 +23,11 @@ import UIKit
 //[] Check iOS 11~15
 //[] 不可背景播放，當從背景回到前景時，要繼續播放
 //[] 不可在 Remote Control Center 裡顯示資訊
+//[] Preview 播完後回到 thumbnail
+//[] 提供一個方法可以直接進到 fullscreen replay
+//[] 如果用戶的網路，從連網 => 斷網 => 再連網的時候，trailer 會再從頭播放
+//[] 當用戶按下 preview 鈕、並且 trailer 播放完畢之後，再回到 detail page 時，auto-preview 會再自動從頭播放
+
 
 public protocol TrailerPlayerViewDelegate: AnyObject {
     func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView)
@@ -51,6 +56,14 @@ public class TrailerPlayerView: UIView {
         view.clipsToBounds = true
         view.backgroundColor = .black
         view.contentMode = .scaleAspectFill
+        return view
+    }()
+    
+    @AutoLayout
+    public var contentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .black
+        view.isHidden = true
         return view
     }()
     
@@ -106,8 +119,9 @@ public class TrailerPlayerView: UIView {
         guard let item = object as? AVPlayerItem else { return }
         switch item.status {
         case .readyToPlay:
-            thumbnailView.image = nil
+            contentView.isHidden = false
         default:
+            print("[ERROR] TrailerPlayerView item status : \(item.status)")
             break
         }
     }
@@ -147,6 +161,8 @@ public extension TrailerPlayerView {
     func replay() {
         player?.seek(to: CMTime.zero)
         player?.play()
+        
+        contentView.isHidden = false
     }
     
     func seek(to time: TimeInterval) {
@@ -175,6 +191,10 @@ private extension TrailerPlayerView {
         addSubview(loadingIndicator)
         loadingIndicator.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
         loadingIndicator.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+        
+        addSubview(contentView)
+        contentView.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
+        contentView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
     }
     
     func fetchThumbnailImage(_ url: URL) {
@@ -211,7 +231,7 @@ private extension TrailerPlayerView {
         }
         
         playerLayer = AVPlayerLayer(player: player)
-        layer.addSublayer(playerLayer!)
+        contentView.layer.addSublayer(playerLayer!)
     }
     
     func reset() {
@@ -236,6 +256,7 @@ private extension TrailerPlayerView {
         if item.autoReplay {
             replay()
         } else {
+            contentView.isHidden = true
             delegate?.trailerPlayerViewDidEndPlaying(self)
         }
     }
