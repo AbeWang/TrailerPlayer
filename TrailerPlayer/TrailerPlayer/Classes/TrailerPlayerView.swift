@@ -49,7 +49,7 @@ public class TrailerPlayerView: UIView {
     @AutoLayout
     private var loadingIndicator: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView()
-        view.style = .white
+        view.style = .whiteLarge
         return view
     }()
     
@@ -124,6 +124,7 @@ public class TrailerPlayerView: UIView {
         guard let item = object as? AVPlayerItem else { return }
         switch item.status {
         case .readyToPlay:
+            loadingIndicator.stopAnimating()
             contentView.isHidden = false
         default:
             print("[ERROR] TrailerPlayerView item status : \(item.status)")
@@ -135,12 +136,13 @@ public class TrailerPlayerView: UIView {
 public extension TrailerPlayerView {
     
     func set(item: TrailerPlayerItem) {
+        loadingIndicator.startAnimating()
+        
         reset()
         
         currentPlayingItem = item
         
         if let url = item.thumbnailUrl {
-            loadingIndicator.startAnimating()
             fetchThumbnailImage(url)
         }
         
@@ -198,12 +200,11 @@ private extension TrailerPlayerView {
         backgroundColor = .black
         
         layout(view: thumbnailView, into: self, animated: false)
+        layout(view: contentView, into: self, animated: false)
         
         addSubview(loadingIndicator)
         loadingIndicator.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
         loadingIndicator.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-        
-        layout(view: contentView, into: self, animated: false)
     }
     
     func fetchThumbnailImage(_ url: URL) {
@@ -211,8 +212,12 @@ private extension TrailerPlayerView {
             guard let self = self else { return }
             
             DispatchQueue.main.async {
-                self.loadingIndicator.stopAnimating()
                 guard let data = data, error == nil else { return }
+                
+                if self.currentPlayingItem?.videoUrl == nil {
+                    self.loadingIndicator.stopAnimating()
+                }
+                
                 UIView.transition(with: self.thumbnailView, duration: 0.25, options: .transitionCrossDissolve) {
                     self.thumbnailView.image = UIImage(data: data)
                 } completion: {_ in }
