@@ -21,7 +21,7 @@ import UIKit
 //[O] 當 trailer 播放完畢之後，播放畫面會停止，且正中間會有一個 Replay 按鈕，用戶可以選點此按鈕以重播此 trailer。
 //[O] Preview 功能的 Progress bar 的右方，會有此部 trailer 的倒數秒數，並會隨著播放而逐漸減少秒數。
 //[O] 不可背景播放
-//[] 從背景回到前景時，要繼續播放
+//[O] 從背景回到前景時，要繼續播放
 //[] 當影片 Buffering 的時候要秀轉圈圈
 //[] trailer顯示時，要隱藏 thumbnail image
 //[O] 不可在 Remote Control Center 裡顯示資訊
@@ -76,6 +76,8 @@ public class TrailerPlayerView: UIView {
     private var playerLayer: AVPlayerLayer?
     private var currentPlayingItem: TrailerPlayerItem?
     
+    private var shouldResumePlay: Bool = false
+    
     public var isMuted: Bool {
         player?.isMuted ?? true
     }
@@ -97,12 +99,12 @@ public class TrailerPlayerView: UIView {
     
     public init() {
         super.init(frame: CGRect.zero)
-        setupUI()
+        setup()
     }
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
-        setupUI()
+        setup()
     }
     
     required init?(coder: NSCoder) {
@@ -192,7 +194,7 @@ public extension TrailerPlayerView {
 
 private extension TrailerPlayerView {
     
-    func setupUI() {
+    func setup() {
         backgroundColor = .black
         
         layout(view: thumbnailView, into: self, animated: false)
@@ -222,6 +224,9 @@ private extension TrailerPlayerView {
     func setupPlayer(_ url: URL) {
         let playerItem = AVPlayerItem(url: url)
         playerItem.addObserver(self, forKeyPath: "status", options: [.new], context: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playerDidEndPlaying), name: .AVPlayerItemDidPlayToEndTime, object: playerItem)
         
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
@@ -286,4 +291,17 @@ private extension TrailerPlayerView {
             delegate?.trailerPlayerViewDidEndPlaying(self)
         }
     }
+    
+    @objc func appWillEnterForeground() {
+        if shouldResumePlay {
+            shouldResumePlay = false
+            play()
+        }
+    }
+    
+    @objc func appDidEnterBackground() {
+        guard status == .playing else { return }
+        shouldResumePlay = true
+    }
+    
 }
