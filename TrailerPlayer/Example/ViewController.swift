@@ -90,6 +90,7 @@ class ViewController: UIViewController {
         playPauseButton.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
         
         view.addSubview(fullscreenButton)
+        fullscreenButton.addTarget(self, action: #selector(didTapFullscreen), for: .touchUpInside)
         fullscreenButton.topAnchor.constraint(equalTo: playPauseButton.bottomAnchor, constant: 20.0).isActive = true
         fullscreenButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         fullscreenButton.widthAnchor.constraint(equalToConstant: 150.0).isActive = true
@@ -114,6 +115,11 @@ class ViewController: UIViewController {
             thumbnailUrl: URL(string: "https://img.ltn.com.tw/Upload/news/600/2019/03/30/phpUCF6ub.jpg"))
         playerView.set(item: item)
     }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        playerView.fullscreen(enabled: UIDevice.current.orientation.isLandscape)
+    }
 }
 
 extension ViewController {
@@ -128,6 +134,10 @@ extension ViewController {
         } else {
             playerView.play()
         }
+    }
+    
+    @objc func didTapFullscreen() {
+        playerView.fullscreen(enabled: true, rotateTo: .landscapeRight)
     }
     
     @objc func didChangePlaybackTime() {

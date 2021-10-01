@@ -10,21 +10,20 @@ import AVFoundation
 import UIKit
 
 // TODO: SPEC
-//[] 對於沒有 trailer 的 content，就像現行 spec 一樣單純顯示 thumbnail。
-//[] 對於有 trailer 的 content，用戶進入 detail page 後，可以自動播放 trailer，且在播放途中可以隨時暫停播放。
-//[] Preview 功能不會有倍速播放功能，但是 progress bar 仍然是必須要有，而且用戶可以自由調整 progress bar 以觀看在不同秒數的內容。
+//[O] 對於沒有 trailer 的 content，就像現行 spec 一樣單純顯示 thumbnail。
+//[O] 對於有 trailer 的 content，用戶進入 detail page 後，可以自動播放 trailer，且在播放途中可以隨時暫停播放。
+//[O] Preview 功能不會有倍速播放功能，但是 progress bar 仍然是必須要有，而且用戶可以自由調整 progress bar 以觀看在不同秒數的內容。
 //[] Preview 功能不允許用 chromecast/AirPlay 投到輸出設備上。
-//[] Preview 功能的聲音部份，預設是 off，但用戶可以點選音量按鈕，以打開聲音。 (只有開/關功能，沒有音量的 progress bar)
-//[] 對於同時有 thumbnail 與 trailer 的 content，首先一進入 detail page 時會先顯示 thumbnail，此時背景會持續 loading trailer。直到 trailer loading 完成、ready to play 的時候，即顯示 trailer 並自動播放，此時縮圖會被隱藏起來。
-//[] Preview 功能可以全螢幕播放。
-//[] Trailer 的顯示 size 會跟 thumbnail 完全一致 & 重疊。
-//[] 當 trailer 播放完畢之後，播放畫面會停止，且正中間會有一個 Replay 按鈕，用戶可以選點此按鈕以重播此 trailer。
-//[] Preview 功能的 Progress bar 的右方，會有此部 trailer 的倒數秒數，並會隨著播放而逐漸減少秒數。
+//[O] Preview 功能的聲音部份，預設是 off，但用戶可以點選音量按鈕，以打開聲音。 (只有開/關功能，沒有音量的 progress bar)
+//[O] 對於同時有 thumbnail 與 trailer 的 content，首先一進入 detail page 時會先顯示 thumbnail，此時背景會持續 loading trailer。直到 trailer loading 完成、ready to play 的時候，即顯示 trailer 並自動播放，此時縮圖會被隱藏起來。
+//[O] Preview 功能可以全螢幕播放。
+//[O] Trailer 的顯示 size 會跟 thumbnail 完全一致 & 重疊。
+//[O] 當 trailer 播放完畢之後，播放畫面會停止，且正中間會有一個 Replay 按鈕，用戶可以選點此按鈕以重播此 trailer。
+//[O] Preview 功能的 Progress bar 的右方，會有此部 trailer 的倒數秒數，並會隨著播放而逐漸減少秒數。
 //[] Check iOS 11~15
 //[] 不可背景播放，當從背景回到前景時，要繼續播放
 //[] 不可在 Remote Control Center 裡顯示資訊
-//[] Preview 播完後回到 thumbnail
-//[] 提供一個方法可以直接進到 fullscreen replay
+//[O] Preview 播完後回到 thumbnail
 //[] 如果用戶的網路，從連網 => 斷網 => 再連網的時候，trailer 會再從頭播放
 //[] 當用戶按下 preview 鈕、並且 trailer 播放完畢之後，再回到 detail page 時，auto-preview 會再自動從頭播放
 
@@ -41,11 +40,6 @@ public class TrailerPlayerView: UIView {
         case pause
         case waitingToPlay
         case unknown
-    }
-    
-    static var fullscreenEnabled: Bool {
-        let view = UIApplication.shared.keyWindow?.subviews.last
-        return view is TrailerPlayerView
     }
     
     @AutoLayout
@@ -117,7 +111,7 @@ public class TrailerPlayerView: UIView {
     
     public override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
-        playerLayer?.frame = CGRect(x: 0.0, y: 0.0, width: frame.width, height: frame.height)
+        playerLayer?.frame = CGRect(x: 0.0, y: 0.0, width: contentView.frame.width, height: contentView.frame.height)
     }
     
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -179,8 +173,16 @@ public extension TrailerPlayerView {
         player.isMuted = !player.isMuted
     }
     
-    func toggleFullscreen() {
+    func fullscreen(enabled: Bool, rotateTo orientation: UIInterfaceOrientation? = nil) {
+        guard let window = UIApplication.shared.keyWindow else { return }
         
+        contentView.removeFromSuperview()
+
+        layout(view: contentView, into: enabled ? window: self)
+        
+        if let orientation = orientation {
+            UIDevice.current.setValue(orientation.rawValue, forKey: "orientation")
+        }
     }
 }
 
@@ -189,17 +191,13 @@ private extension TrailerPlayerView {
     func setupUI() {
         backgroundColor = .black
         
-        addSubview(thumbnailView)
-        thumbnailView.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
-        thumbnailView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
+        layout(view: thumbnailView, into: self, animated: false)
         
         addSubview(loadingIndicator)
         loadingIndicator.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
         loadingIndicator.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
         
-        addSubview(contentView)
-        contentView.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
-        contentView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
+        layout(view: contentView, into: self, animated: false)
     }
     
     func fetchThumbnailImage(_ url: URL) {
