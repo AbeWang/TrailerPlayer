@@ -22,7 +22,7 @@ import UIKit
 //[O] Preview 功能的 Progress bar 的右方，會有此部 trailer 的倒數秒數，並會隨著播放而逐漸減少秒數。
 //[O] 不可背景播放
 //[O] 從背景回到前景時，要繼續播放
-//[] 當影片 Buffering 的時候要秀轉圈圈
+//[O] 當影片 Buffering 的時候要秀轉圈圈
 //[O] trailer顯示時，要隱藏 thumbnail image
 //[O] 不可在 Remote Control Center 裡顯示資訊
 //[O] Preview 播完後回到 thumbnail
@@ -87,6 +87,8 @@ public class TrailerPlayerView: UIView {
     
     private var periodicTimeObserver: Any?
     private var statusObserver: NSKeyValueObservation?
+    private var timeControlStatusObserver: NSKeyValueObservation?
+    private var previousTimeControlStatus: AVPlayer.TimeControlStatus?
     
     public var isMuted: Bool {
         player?.isMuted ?? true
@@ -248,25 +250,35 @@ private extension TrailerPlayerView {
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
         
         player = AVPlayer(playerItem: playerItem)
+        previousTimeControlStatus = player?.timeControlStatus
+        
         periodicTimeObserver = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(0.1, preferredTimescale: Int32(NSEC_PER_SEC)), queue: DispatchQueue.main) { [weak self] _ in
             guard
                 let self = self,
                 let player = self.player,
-                let item = player.currentItem
+                player.timeControlStatus == .playing
             else { return }
             
-            if player.timeControlStatus == .playing {
-                self.delegate?.trailerPlayerView(self, didUpdatePlaybackTime: CMTimeGetSeconds(player.currentTime()))
-            }
+            self.delegate?.trailerPlayerView(self, didUpdatePlaybackTime: CMTimeGetSeconds(player.currentTime()))
+        }
+        
+        timeControlStatusObserver = player?.observe(\.timeControlStatus, options: [.old, .new]) { [weak self] player, _ in
+            guard let self = self else { return }
             
-            guard item.status == .readyToPlay else { return }
+            // newValue and oldValue always nil when observing .timeControlStatus
+            // https://bugs.swift.org/browse/SR-5872
             
-            switch (item.isPlaybackLikelyToKeepUp, self.loadingIndicator.isAnimating) {
-            case (true, true):
+            let newValue = player.timeControlStatus
+            let oldValue = self.previousTimeControlStatus
+            
+            self.previousTimeControlStatus = newValue
+
+            switch (oldValue, newValue) {
+            case (.waitingToPlayAtSpecifiedRate, _) where newValue != .waitingToPlayAtSpecifiedRate:
                 self.loadingIndicator.stopAnimating()
-            case (false, false):
+            case (_, .waitingToPlayAtSpecifiedRate) where oldValue != .waitingToPlayAtSpecifiedRate:
                 self.loadingIndicator.startAnimating()
-            case (_: _):
+            default:
                 break
             }
         }
@@ -289,6 +301,11 @@ private extension TrailerPlayerView {
         
         statusObserver?.invalidate()
         statusObserver = nil
+        
+        timeControlStatusObserver?.invalidate()
+        timeControlStatusObserver = nil
+        
+        previousTimeControlStatus = nil
         
         player?.pause()
         player?.replaceCurrentItem(with: nil)
