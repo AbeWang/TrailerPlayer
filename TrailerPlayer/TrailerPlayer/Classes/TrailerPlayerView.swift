@@ -95,6 +95,10 @@ public class TrailerPlayerView: UIView {
         player?.isMuted ?? true
     }
     
+    public var canUseFullscreen: Bool {
+        currentPlayingItem?.videoUrl != nil
+    }
+    
     public var duration: TimeInterval {
         guard let time = player?.currentItem?.duration else { return 0 }
         return CMTimeGetSeconds(time)
@@ -183,7 +187,7 @@ public extension TrailerPlayerView {
     }
     
     func fullscreen(enabled: Bool, rotateTo orientation: UIInterfaceOrientation? = nil) {
-        guard let window = UIApplication.shared.keyWindow else { return }
+        guard let window = UIApplication.shared.keyWindow, canUseFullscreen else { return }
         
         containerView.removeFromSuperview()
 

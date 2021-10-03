@@ -137,6 +137,12 @@ extension ViewController {
     }
     
     @objc func didTapFullscreen() {
+        guard playerView.canUseFullscreen else {
+            let controller = UIAlertController(title: "No trailer video url", message: nil, preferredStyle: .alert)
+            controller.addAction(UIAlertAction(title: "Close", style: .cancel, handler: nil))
+            present(controller, animated: true, completion: nil)
+            return
+        }
         playerView.fullscreen(enabled: true, rotateTo: .landscapeRight)
     }
     
