@@ -30,6 +30,7 @@ import UIKit
 //[] 當用戶按下 preview 鈕、並且 trailer 播放完畢之後，再回到 detail page 時，auto-preview 會再自動從頭播放
 //[] Refactor code
 //[] Check iOS 10~15
+//[] Check leaks
 
 
 public protocol TrailerPlayerViewDelegate: AnyObject {
