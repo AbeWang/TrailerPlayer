@@ -112,7 +112,7 @@ class ViewController: UIViewController {
         
         let item = TrailerPlayerItem(
             url: URL(string: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"),
-            thumbnailUrl: URL(string: "https://img.ltn.com.tw/Upload/news/600/2019/03/30/phpUCF6ub.jpg"))
+            thumbnailUrl: URL(string: "https://upload.cc/i1/2021/10/04/qGNK3M.png"))
         playerView.set(item: item)
     }
     

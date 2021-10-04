@@ -9,30 +9,6 @@ import Foundation
 import AVFoundation
 import UIKit
 
-// TODO: SPEC
-//[O] 對於沒有 trailer 的 content，就像現行 spec 一樣單純顯示 thumbnail。
-//[O] 對於有 trailer 的 content，用戶進入 detail page 後，可以自動播放 trailer，且在播放途中可以隨時暫停播放。
-//[O] Preview 功能不會有倍速播放功能，但是 progress bar 仍然是必須要有，而且用戶可以自由調整 progress bar 以觀看在不同秒數的內容。
-//[O] Preview 功能不允許用 AirPlay 投到輸出設備上。
-//[O] Preview 功能的聲音部份，預設是 off，但用戶可以點選音量按鈕，以打開聲音。 (只有開/關功能，沒有音量的 progress bar)
-//[O] 對於同時有 thumbnail 與 trailer 的 content，首先一進入 detail page 時會先顯示 thumbnail，此時背景會持續 loading trailer。直到 trailer loading 完成、ready to play 的時候，即顯示 trailer 並自動播放，此時縮圖會被隱藏起來。
-//[O] Preview 功能可以全螢幕播放。
-//[O] Trailer 的顯示 size 會跟 thumbnail 完全一致 & 重疊。
-//[O] 當 trailer 播放完畢之後，播放畫面會停止，且正中間會有一個 Replay 按鈕，用戶可以選點此按鈕以重播此 trailer。
-//[O] Preview 功能的 Progress bar 的右方，會有此部 trailer 的倒數秒數，並會隨著播放而逐漸減少秒數。
-//[O] 不可背景播放
-//[O] 從背景回到前景時，要繼續播放
-//[O] 當影片 Buffering 的時候要秀轉圈圈
-//[O] trailer顯示時，要隱藏 thumbnail image
-//[O] 不可在 Remote Control Center 裡顯示資訊
-//[O] Preview 播完後回到 thumbnail
-//[O] 如果用戶的網路，從連網 => 斷網 => 再連網的時候，trailer 會接續播放
-//[] 當用戶按下 preview 鈕、並且 trailer 播放完畢之後，再回到 detail page 時，auto-preview 會再自動從頭播放
-//[] Refactor code
-//[] Check iOS 10~15
-//[] Check leaks
-
-
 public protocol TrailerPlayerViewDelegate: AnyObject {
     func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView)
     func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval)
