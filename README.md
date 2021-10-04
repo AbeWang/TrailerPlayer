@@ -26,3 +26,28 @@ iOS video player for trailer.
 - [x] Profile: leaks, allocations, time profiler
 
 ## How to use
+#### 建立 TrailerPlayerView
+```swift
+let playerView = TrailerPlayerView()
+let item = TrailerPlayerItem(
+            url: URL(string: "..."),
+            thumbnailUrl: URL(string: "..."))
+playerView.delegate = self
+playerView.set(item: item)
+```
+#### TrailerPlayerItem 細節設定
+```swift
+required public init(url: URL? = nil,          // 預告片 url
+                     thumbnailUrl: URL? = nil, // 縮圖 url
+                     autoPlay: Bool = true,    // 自動播放，否則自行呼叫 play()
+                     autoReplay: Bool = false, // 播放完畢後，是否自動重新播放
+                     mute: Bool = true)        // 預設播放為靜音
+```
+#### TrailerPlayerViewDelegate
+```swift
+// 如果 autoReplay 為 false 時，播放完畢會觸發
+func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView)
+// 當 player 播放時，可透過此 callback 更新播放時間
+func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval)
+```
+#### 其它細節操作可參考 Sample code
