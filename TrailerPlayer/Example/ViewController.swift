@@ -67,10 +67,27 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setupUI()
+        
+        let item = TrailerPlayerItem(
+            url: URL(string: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"),
+            thumbnailUrl: URL(string: "https://upload.cc/i1/2021/10/04/qGNK3M.png"))
+        playerView.delegate = self
+        playerView.set(item: item)
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        playerView.fullscreen(enabled: UIDevice.current.orientation.isLandscape)
+    }
+}
+
+private extension ViewController {
+    
+    func setupUI() {
         view.backgroundColor = .white
         
         view.addSubview(playerView)
-        playerView.delegate = self
         playerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         playerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         playerView.heightAnchor.constraint(equalTo: playerView.widthAnchor, multiplier: 0.65).isActive = true
@@ -105,24 +122,11 @@ class ViewController: UIViewController {
         
         view.addSubview(progressView)
         progressView.addTarget(self, action: #selector(didChangePlaybackTime), for: .valueChanged)
-        progressView.addTarget(self, action: #selector(didTouchProgress), for: .touchDown)
+        progressView.addTarget(self, action: #selector(didTouchProgressSlider), for: .touchDown)
         progressView.topAnchor.constraint(equalTo: countDownLabel.bottomAnchor, constant: 20.0).isActive = true
         progressView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         progressView.widthAnchor.constraint(equalToConstant: 300.0).isActive = true
-        
-        let item = TrailerPlayerItem(
-            url: URL(string: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"),
-            thumbnailUrl: URL(string: "https://upload.cc/i1/2021/10/04/qGNK3M.png"))
-        playerView.set(item: item)
     }
-    
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        playerView.fullscreen(enabled: UIDevice.current.orientation.isLandscape)
-    }
-}
-
-extension ViewController {
     
     @objc func didTapMute() {
         playerView.toggleMute()
@@ -137,12 +141,6 @@ extension ViewController {
     }
     
     @objc func didTapFullscreen() {
-        guard playerView.canUseFullscreen else {
-            let controller = UIAlertController(title: "No trailer video url", message: nil, preferredStyle: .alert)
-            controller.addAction(UIAlertAction(title: "Close", style: .cancel, handler: nil))
-            present(controller, animated: true, completion: nil)
-            return
-        }
         playerView.fullscreen(enabled: true, rotateTo: .landscapeRight)
     }
     
@@ -151,16 +149,15 @@ extension ViewController {
         playerView.play()
     }
     
-    @objc func didTouchProgress() {
+    @objc func didTouchProgressSlider() {
         playerView.pause()
     }
-    
 }
 
 extension ViewController: TrailerPlayerViewDelegate {
     
     func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView) {
-        let controller = UIAlertController(title: "End", message: nil, preferredStyle: .alert)
+        let controller = UIAlertController(title: "PlayerViewDidEndPlaying", message: nil, preferredStyle: .alert)
         controller.addAction(UIAlertAction(title: "Replay", style: .default, handler: { _ in
             view.replay()
         }))
@@ -170,9 +167,7 @@ extension ViewController: TrailerPlayerViewDelegate {
     
     func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval) {
         countDownLabel.text = "Countdown timer:\n \(Int(playerView.duration - time))"
-        
         progressView.value = Float(time)
         progressView.maximumValue = Float(playerView.duration)
     }
-    
 }
