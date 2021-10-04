@@ -1,7 +1,7 @@
 # Trailer Player
 iOS video player for trailer.
 
-### Sample Video
+![Sample Video](https://abewang.myftp.org/player_demo.mov)
 
 ## SPEC
 - [x] 沒有 trailer 的 content，單純顯示 thumbnail。
