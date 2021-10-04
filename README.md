@@ -1,2 +1,28 @@
 # Trailer Player
 iOS video player for trailer.
+
+### Sample Video
+
+## SPEC
+- [x] 沒有 trailer 的 content，單純顯示 thumbnail。
+- [x] 有 trailer 的 content，可以自動播放 trailer，且在播放途中可以隨時暫停播放。
+- [x] Preview 功能不會有倍速播放，但是 progress bar 必須要有，且用戶可以自由調整 progress bar 觀看在不同秒數的內容。
+- [x] Preview 功能不允許用 AirPlay 投到輸出設備上。
+- [x] Preview 功能的聲音部份，預設是 off，但用戶可以點選音量按鈕，以打開聲音。
+- [x] 對於同時有 thumbnail 與 trailer 的 content，會先顯示 thumbnail，此時背景會持續 loading trailer。直到 trailer loading 完成、ready to play 的時候，即顯示 trailer 並自動播放，此時縮圖會被隱藏起來。
+- [x] Preview 功能可以全螢幕播放。
+- [x] Trailer 的顯示 size 會跟 thumbnail 完全一致。
+- [x] 當 trailer 播放完畢之後，播放畫面會停止，且正中間會有一個 Replay 按鈕，用戶可以選點此按鈕以重播此 trailer。
+- [x] 可以提供 trailer 的倒數秒數，並會隨著播放而逐漸減少秒數。
+- [x] 不可背景播放。
+- [x] 從背景回到前景時，要繼續播放。
+- [x] 當影片 Buffering 的時候要秀 loading。
+- [x] trailer 顯示時，要隱藏 thumbnail image。
+- [x] 不可在 Remote Control Center 裡顯示資訊。
+- [x] Preview 播完後回到 thumbnail。
+- [x] 如果用戶的網路，從連網 => 斷網 => 再連網的時候，trailer 會接續播放。
+- [ ] Refactor code
+- [ ] Support iOS 10~15
+- [x] Profile: leaks, allocations, time profiler
+
+## How to use
