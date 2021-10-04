@@ -2,7 +2,7 @@
 //  TrailerPlayerItem.swift
 //  TrailerPlayer
 //
-//  Created by Abe Wang on 2021/9/28.
+//  Created by Abe Wang on 2021/10/1.
 //
 
 import Foundation

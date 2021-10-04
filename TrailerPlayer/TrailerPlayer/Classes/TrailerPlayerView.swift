@@ -2,10 +2,9 @@
 //  TrailerPlayerView.swift
 //  TrailerPlayer
 //
-//  Created by Abe Wang on 2021/9/28.
+//  Created by Abe Wang on 2021/10/1.
 //
 
-import Foundation
 import AVFoundation
 import UIKit
 
@@ -23,49 +22,7 @@ public class TrailerPlayerView: UIView {
         case unknown
     }
     
-    @AutoLayout
-    private var loadingIndicator: UIActivityIndicatorView = {
-        let view = UIActivityIndicatorView()
-        view.style = .whiteLarge
-        return view
-    }()
-    
-    @AutoLayout
-    private var containerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .black
-        return view
-    }()
-    
-    @AutoLayout
-    private var thumbnailView: UIImageView = {
-        let view = UIImageView()
-        view.clipsToBounds = true
-        view.backgroundColor = .black
-        view.contentMode = .scaleAspectFill
-        return view
-    }()
-    
-    @AutoLayout
-    public var playerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .black
-        view.isHidden = true
-        return view
-    }()
-    
-    weak var delegate: TrailerPlayerViewDelegate?
-    
-    private var player: AVPlayer?
-    private var playerLayer: AVPlayerLayer?
-    private var currentPlayingItem: TrailerPlayerItem?
-    
-    private var shouldResumePlay: Bool = false
-    
-    private var periodicTimeObserver: Any?
-    private var statusObserver: NSKeyValueObservation?
-    private var timeControlStatusObserver: NSKeyValueObservation?
-    private var previousTimeControlStatus: AVPlayer.TimeControlStatus?
+    public weak var delegate: TrailerPlayerViewDelegate?
     
     public var isMuted: Bool {
         player?.isMuted ?? true
@@ -76,7 +33,7 @@ public class TrailerPlayerView: UIView {
     }
     
     public var duration: TimeInterval {
-        guard let time = player?.currentItem?.duration else { return 0 }
+        guard let time = player?.currentItem?.duration else { return 0.0 }
         return CMTimeGetSeconds(time)
     }
     
@@ -90,6 +47,50 @@ public class TrailerPlayerView: UIView {
         }
     }
     
+    @AutoLayout
+    public private(set) var containerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .black
+        return view
+    }()
+    
+    @AutoLayout
+    public private(set) var thumbnailView: UIImageView = {
+        let view = UIImageView()
+        view.clipsToBounds = true
+        view.backgroundColor = .black
+        view.contentMode = .scaleAspectFill
+        return view
+    }()
+    
+    @AutoLayout
+    public private(set) var playerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .black
+        view.isHidden = true
+        return view
+    }()
+    
+    @AutoLayout
+    private var loadingIndicator: UIActivityIndicatorView = {
+        let view = UIActivityIndicatorView()
+        view.style = .whiteLarge
+        return view
+    }()
+    
+    private var player: AVPlayer?
+    private var playerLayer: AVPlayerLayer?
+    private var currentPlayingItem: TrailerPlayerItem?
+    private var shouldResumePlay: Bool = false
+    private var periodicTimeObserver: Any?
+    private var statusObserver: NSKeyValueObservation?
+    private var timeControlStatusObserver: NSKeyValueObservation?
+    private var previousTimeControlStatus: AVPlayer.TimeControlStatus?
+    
+    deinit {
+        reset()
+    }
+    
     public init() {
         super.init(frame: CGRect.zero)
         setup()
@@ -100,12 +101,8 @@ public class TrailerPlayerView: UIView {
         setup()
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    deinit {
-        reset()
     }
     
     public override func layoutSublayers(of layer: CALayer) {
@@ -126,14 +123,11 @@ public extension TrailerPlayerView {
         if let url = item.thumbnailUrl {
             fetchThumbnailImage(url)
         }
-        
         if let url = item.videoUrl {
             setupPlayer(url)
-            
             if item.autoPlay {
                 player?.play()
             }
-            
             player?.isMuted = item.mute
         }
     }
@@ -147,8 +141,9 @@ public extension TrailerPlayerView {
     }
     
     func replay() {
-        player?.seek(to: CMTime.zero)
-        player?.play()
+        guard let player = player else { return }
+        player.seek(to: CMTime.zero)
+        player.play()
         
         playerView.isHidden = false
     }
@@ -166,7 +161,6 @@ public extension TrailerPlayerView {
         guard let window = UIApplication.shared.keyWindow, canUseFullscreen else { return }
         
         containerView.removeFromSuperview()
-
         layout(view: containerView, into: enabled ? window: self)
         
         if let orientation = orientation {
@@ -190,9 +184,8 @@ private extension TrailerPlayerView {
     }
     
     func fetchThumbnailImage(_ url: URL) {
-        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
             guard let self = self else { return }
-            
             DispatchQueue.main.async {
                 guard let data = data, error == nil else { return }
                 
@@ -209,7 +202,15 @@ private extension TrailerPlayerView {
     }
     
     func setupPlayer(_ url: URL) {
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+        
         let playerItem = AVPlayerItem(url: url)
+        player = AVPlayer(playerItem: playerItem)
+        previousTimeControlStatus = player?.timeControlStatus
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(playerDidEndPlaying), name: .AVPlayerItemDidPlayToEndTime, object: playerItem)
         
         statusObserver = playerItem.observe(\.status, options: [.new]) { [weak self] _, _ in
             guard let self = self, let item = self.player?.currentItem else { return }
@@ -223,15 +224,6 @@ private extension TrailerPlayerView {
                 print("[TrailerPlayerView] unknown error")
             }
         }
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(playerDidEndPlaying), name: .AVPlayerItemDidPlayToEndTime, object: playerItem)
-        
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
-        
-        player = AVPlayer(playerItem: playerItem)
-        previousTimeControlStatus = player?.timeControlStatus
         
         periodicTimeObserver = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(0.1, preferredTimescale: Int32(NSEC_PER_SEC)), queue: DispatchQueue.main) { [weak self] _ in
             guard
@@ -248,10 +240,8 @@ private extension TrailerPlayerView {
             
             // newValue and oldValue always nil when observing .timeControlStatus
             // https://bugs.swift.org/browse/SR-5872
-            
             let newValue = player.timeControlStatus
             let oldValue = self.previousTimeControlStatus
-            
             self.previousTimeControlStatus = newValue
 
             switch (oldValue, newValue) {
@@ -269,11 +259,12 @@ private extension TrailerPlayerView {
     }
     
     func reset() {
+        NotificationCenter.default.removeObserver(self)
+        
         currentPlayingItem = nil
+        previousTimeControlStatus = nil
         
         thumbnailView.image = nil
-        
-        NotificationCenter.default.removeObserver(self)
         
         if let observer = periodicTimeObserver {
             player?.removeTimeObserver(observer)
@@ -285,8 +276,6 @@ private extension TrailerPlayerView {
         
         timeControlStatusObserver?.invalidate()
         timeControlStatusObserver = nil
-        
-        previousTimeControlStatus = nil
         
         player?.pause()
         player?.replaceCurrentItem(with: nil)
@@ -337,5 +326,4 @@ private extension TrailerPlayerView {
         guard status == .playing || status == .waitingToPlay else { return }
         shouldResumePlay = true
     }
-    
 }
