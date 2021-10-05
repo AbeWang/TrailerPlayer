@@ -51,8 +51,12 @@ func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView)
 // 當 player 播放時，可透過此 callback 更新播放時間
 func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval)
 ```
-#### DRM、PIP 支援
+#### PIP 支援
 ```
 預計 v1.1.0 提供
+```
+#### DRM 支援
+```
+預計 v1.2.0 提供
 ```
 #### 其它細節操作可參考 Sample code
