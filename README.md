@@ -23,7 +23,7 @@ https://user-images.githubusercontent.com/1064039/135829008-7afd2ce1-c4b5-4138-8
 - [x] 如果用戶的網路，從連網 => 斷網 => 再連網的時候，trailer 會接續播放。
 - [ ] Refactor code
 - [ ] Support iOS 10~15
-- [ ] Support SPM
+- [x] Support SPM
 - [x] Profile: leaks, allocations, time profiler
 
 ## How to use
