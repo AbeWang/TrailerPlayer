@@ -3,7 +3,7 @@ iOS video player for trailer.
 
 https://user-images.githubusercontent.com/1064039/135829008-7afd2ce1-c4b5-4138-8976-c010df067e19.mov
 
-## SPEC v1.0.0
+## spec v1.0.0
 - [x] 沒有 trailer 的 content，單純顯示 thumbnail。
 - [x] 有 trailer 的 content，可以自動播放 trailer，且在播放途中可以隨時暫停播放。
 - [x] Preview 功能不會有倍速播放，但是 progress bar 必須要有，且用戶可以自由調整 progress bar 觀看在不同秒數的內容。
@@ -50,5 +50,9 @@ required public init(url: URL? = nil,          // 預告片 url
 func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView)
 // 當 player 播放時，可透過此 callback 更新播放時間
 func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval)
+```
+#### DRM 支援
+```
+預計 v1.1.0 提供
 ```
 #### 其它細節操作可參考 Sample code
