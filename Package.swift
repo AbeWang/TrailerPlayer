@@ -12,6 +12,7 @@ let package = Package(
             name: "TrailerPlayer",
             targets: ["TrailerPlayer"])
     ],
+    dependencies: [],
     targets: [
         .target(
             name:"TrailerPlayer",
