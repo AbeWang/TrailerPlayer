@@ -3,7 +3,7 @@ iOS video player for trailer.
 
 https://user-images.githubusercontent.com/1064039/135829008-7afd2ce1-c4b5-4138-8976-c010df067e19.mov
 
-## SPEC
+## SPEC v1.0.0
 - [x] 沒有 trailer 的 content，單純顯示 thumbnail。
 - [x] 有 trailer 的 content，可以自動播放 trailer，且在播放途中可以隨時暫停播放。
 - [x] Preview 功能不會有倍速播放，但是 progress bar 必須要有，且用戶可以自由調整 progress bar 觀看在不同秒數的內容。
