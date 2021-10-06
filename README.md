@@ -3,6 +3,11 @@ iOS video player for trailer.
 
 https://user-images.githubusercontent.com/1064039/135829008-7afd2ce1-c4b5-4138-8976-c010df067e19.mov
 
+## v1.2.0 [Pre-release]
+- Support control panel
+- Update sample code (use custom control panel)
+- Fixed some known bugs
+
 ## v1.1.0
 - Support PIP
 - Fixed some known bugs
@@ -25,10 +30,8 @@ https://user-images.githubusercontent.com/1064039/135829008-7afd2ce1-c4b5-4138-8
 - [x] 不可在 Remote Control Center 裡顯示資訊。
 - [x] Preview 播完後回到 thumbnail。
 - [x] 如果用戶的網路，從連網 => 斷網 => 再連網的時候，trailer 會接續播放。
-- [ ] Refactor code
 - [ ] Support iOS 10~15
 - [x] Support SPM
-- [x] Profile: leaks, allocations, time profiler
 
 ## How to use
 #### 建立 TrailerPlayerView
@@ -54,13 +57,20 @@ required public init(url: URL? = nil,          // 預告片 url
 func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView)
 // 當 player 播放時，可透過此 callback 更新播放時間
 func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval)
+// 當 player 狀態改變時，可透過此 callback 更新控制面板上的播放狀態
+func trailerPlayerView(_ view: TrailerPlayerView, didChangeStatus status: TrailerPlayerView.Status)
 ```
-#### PIP 支援
+#### [Optional] PIP 支援
 ```swift
 playerView.enablePictureInPicture = true
 ```
-#### DRM 支援
+#### [Optional] 設置控制面板
+```swift
+let controlPanel: UIView = ... // your custom control panel
+playerView.addControlPanel(controlPanel)
 ```
-預計 v1.2.0 提供
+#### [Optional] DRM 支援
+```
+預計 v1.3.0 提供
 ```
 #### 其它細節操作可參考 Sample code
