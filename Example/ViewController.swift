@@ -130,7 +130,7 @@ private extension ViewController {
         
         controlPanel.addSubview(progressView)
         progressView.addTarget(self, action: #selector(didChangePlaybackTime), for: .valueChanged)
-        progressView.addTarget(self, action: #selector(didTouchProgressSlider), for: .touchDown)
+        progressView.addTarget(self, action: #selector(didTouchDownProgressSlider), for: .touchDown)
         progressView.leftAnchor.constraint(equalTo: controlPanel.safeAreaLayoutGuide.leftAnchor, constant: 10.0).isActive = true
         progressView.rightAnchor.constraint(equalTo: countDownLabel.leftAnchor).isActive = true
         progressView.bottomAnchor.constraint(equalTo: controlPanel.safeAreaLayoutGuide.bottomAnchor).isActive = true
@@ -142,6 +142,7 @@ private extension ViewController {
     @objc func didTapMute() {
         muteButton.isSelected = !muteButton.isSelected
         playerView.toggleMute()
+        playerView.autoFadeOutControlPanelWithAnimation()
     }
     
     @objc func didTapPlayPause() {
@@ -150,20 +151,24 @@ private extension ViewController {
         } else {
             playerView.play()
         }
+        playerView.autoFadeOutControlPanelWithAnimation()
     }
     
     @objc func didTapFullscreen() {
         fullscreenButton.isSelected = !fullscreenButton.isSelected
         playerView.fullscreen(enabled: fullscreenButton.isSelected, rotateTo: fullscreenButton.isSelected ? .landscapeRight: .portrait)
+        playerView.autoFadeOutControlPanelWithAnimation()
     }
     
     @objc func didChangePlaybackTime() {
         playerView.seek(to: TimeInterval(progressView.value))
         playerView.play()
+        playerView.autoFadeOutControlPanelWithAnimation()
     }
     
-    @objc func didTouchProgressSlider() {
+    @objc func didTouchDownProgressSlider() {
         playerView.pause()
+        playerView.cancelAutoFadeOutAnimation()
     }
 }
 
