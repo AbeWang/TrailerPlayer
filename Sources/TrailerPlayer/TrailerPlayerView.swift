@@ -7,6 +7,7 @@
 
 import AVFoundation
 import UIKit
+import AVKit
 
 public protocol TrailerPlayerViewDelegate: AnyObject {
     func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView)
@@ -30,6 +31,11 @@ public class TrailerPlayerView: UIView {
     
     public var canUseFullscreen: Bool {
         currentPlayingItem?.videoUrl != nil
+    }
+    
+    public var enablePictureInPicture: Bool {
+        get { pipEnabled }
+        set { setPictureInPicture(enabled: newValue) }
     }
     
     public var duration: TimeInterval {
@@ -80,8 +86,10 @@ public class TrailerPlayerView: UIView {
     
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
+    private var pictureInPictureController: AVPictureInPictureController?
     private var currentPlayingItem: TrailerPlayerItem?
-    private var shouldResumePlay: Bool = false
+    private var shouldResumePlay = false
+    private var pipEnabled = false
     private var periodicTimeObserver: Any?
     private var statusObserver: NSKeyValueObservation?
     private var timeControlStatusObserver: NSKeyValueObservation?
@@ -141,15 +149,13 @@ public extension TrailerPlayerView {
     }
     
     func replay() {
-        guard let player = player else { return }
-        player.seek(to: CMTime.zero)
-        player.play()
-        
-        playerView.isHidden = false
+        seek(to: 0.0)
+        play()
     }
     
     func seek(to time: TimeInterval) {
         player?.seek(to: CMTimeMakeWithSeconds(time, preferredTimescale: Int32(NSEC_PER_SEC)))
+        playerView.isHidden = false
     }
     
     func toggleMute() {
@@ -256,6 +262,8 @@ private extension TrailerPlayerView {
         
         playerLayer = AVPlayerLayer(player: player)
         playerView.layer.addSublayer(playerLayer!)
+        
+        setPictureInPicture(enabled: pipEnabled)
     }
     
     func reset() {
@@ -276,6 +284,8 @@ private extension TrailerPlayerView {
         
         timeControlStatusObserver?.invalidate()
         timeControlStatusObserver = nil
+        
+        pictureInPictureController = nil
         
         player?.pause()
         player?.replaceCurrentItem(with: nil)
@@ -304,6 +314,19 @@ private extension TrailerPlayerView {
         } completion: { _ in }
     }
     
+    func setPictureInPicture(enabled: Bool) {
+        guard AVPictureInPictureController.isPictureInPictureSupported() else { return }
+        
+        pipEnabled = enabled
+        
+        if !enabled {
+            pictureInPictureController = nil
+        } else if let layer = playerLayer, pictureInPictureController == nil {
+            pictureInPictureController = AVPictureInPictureController(playerLayer: layer)
+            pictureInPictureController?.delegate = self
+        }
+    }
+    
     @objc func playerDidEndPlaying() {
         guard let item = currentPlayingItem else { return }
         
@@ -312,6 +335,11 @@ private extension TrailerPlayerView {
         } else {
             playerView.isHidden = true
             delegate?.trailerPlayerViewDidEndPlaying(self)
+            if pipEnabled {
+                // Reset PIP
+                pictureInPictureController = nil
+                setPictureInPicture(enabled: true)
+            }
         }
     }
     
@@ -325,5 +353,12 @@ private extension TrailerPlayerView {
     @objc func appDidEnterBackground() {
         guard status == .playing || status == .waitingToPlay else { return }
         shouldResumePlay = true
+    }
+}
+
+extension TrailerPlayerView: AVPictureInPictureControllerDelegate {
+    
+    public func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
+        completionHandler(true)
     }
 }
