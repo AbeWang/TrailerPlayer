@@ -366,7 +366,7 @@ private extension TrailerPlayerView {
         
         isPanelShowing = isShow
         
-        UIView.animate(withDuration: 0.3) { [weak self] in
+        UIView.animate(withDuration: 0.25) { [weak self] in
             guard let self = self else { return }
             panel.alpha = isShow ? 1.0: 0.0
             self.layoutIfNeeded()

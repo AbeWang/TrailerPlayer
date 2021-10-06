@@ -13,35 +13,38 @@ class ViewController: UIViewController {
     private var playerView = TrailerPlayerView()
     
     @AutoLayout
+    private var controlPanel: UIView = {
+        let view = UIView()
+        view.backgroundColor = .black.withAlphaComponent(0.5)
+        return view
+    }()
+    
+    @AutoLayout
     private var muteButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setTitle("Mute", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.setTitleColor(.gray, for: .highlighted)
-        button.backgroundColor = .blue
-        button.layer.cornerRadius = 5.0
+        button.tintColor = .white
+        button.isSelected = true
+        button.setImage(UIImage(named: "audio")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(UIImage(named: "no-audio")?.withRenderingMode(.alwaysTemplate), for: .selected)
         return button
     }()
     
     @AutoLayout
     private var playPauseButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setTitle("Play / Pause", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.setTitleColor(.gray, for: .highlighted)
-        button.backgroundColor = .blue
-        button.layer.cornerRadius = 5.0
+        button.tintColor = .white
+        button.isSelected = false
+        button.setImage(UIImage(named: "pause")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(UIImage(named: "play")?.withRenderingMode(.alwaysTemplate), for: .selected)
         return button
     }()
     
     @AutoLayout
     private var fullscreenButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setTitle("Fullscreen", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.setTitleColor(.gray, for: .highlighted)
-        button.backgroundColor = .blue
-        button.layer.cornerRadius = 5.0
+        button.tintColor = .white
+        button.setImage(UIImage(named: "normal-screen")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(UIImage(named: "fullscreen")?.withRenderingMode(.alwaysTemplate), for: .selected)
         return button
     }()
     
@@ -49,8 +52,8 @@ class ViewController: UIViewController {
     private var countDownLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = UIFont.boldSystemFont(ofSize: 24.0)
-        label.textColor = .black
+        label.font = UIFont.systemFont(ofSize: 16.0)
+        label.textColor = .white
         label.numberOfLines = 2
         return label
     }()
@@ -59,6 +62,8 @@ class ViewController: UIViewController {
     private var progressView: UISlider = {
         let view = UISlider()
         view.isContinuous = false
+        view.thumbTintColor = .red
+        view.tintColor = .red
         view.value = 0.0
         view.minimumValue = 0.0
         return view
@@ -92,43 +97,46 @@ private extension ViewController {
         playerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         playerView.heightAnchor.constraint(equalTo: playerView.widthAnchor, multiplier: 0.65).isActive = true
         
-        view.addSubview(muteButton)
-        muteButton.addTarget(self, action: #selector(didTapMute), for: .touchUpInside)
-        muteButton.topAnchor.constraint(equalTo: playerView.bottomAnchor, constant: 20.0).isActive = true
-        muteButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        muteButton.widthAnchor.constraint(equalToConstant: 150.0).isActive = true
-        muteButton.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
-        
-        view.addSubview(playPauseButton)
+        controlPanel.addSubview(playPauseButton)
         playPauseButton.addTarget(self, action: #selector(didTapPlayPause), for: .touchUpInside)
-        playPauseButton.topAnchor.constraint(equalTo: muteButton.bottomAnchor, constant: 20.0).isActive = true
-        playPauseButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        playPauseButton.widthAnchor.constraint(equalToConstant: 150.0).isActive = true
-        playPauseButton.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
+        playPauseButton.centerXAnchor.constraint(equalTo: controlPanel.centerXAnchor).isActive = true
+        playPauseButton.centerYAnchor.constraint(equalTo: controlPanel.centerYAnchor).isActive = true
+        playPauseButton.widthAnchor.constraint(equalToConstant: 60.0).isActive = true
+        playPauseButton.heightAnchor.constraint(equalToConstant: 60.0).isActive = true
         
-        view.addSubview(fullscreenButton)
+        controlPanel.addSubview(fullscreenButton)
         fullscreenButton.addTarget(self, action: #selector(didTapFullscreen), for: .touchUpInside)
-        fullscreenButton.topAnchor.constraint(equalTo: playPauseButton.bottomAnchor, constant: 20.0).isActive = true
-        fullscreenButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        fullscreenButton.widthAnchor.constraint(equalToConstant: 150.0).isActive = true
+        fullscreenButton.bottomAnchor.constraint(equalTo: controlPanel.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        fullscreenButton.rightAnchor.constraint(equalTo: controlPanel.safeAreaLayoutGuide.rightAnchor, constant: -10.0).isActive = true
+        fullscreenButton.widthAnchor.constraint(equalToConstant: 44.0).isActive = true
         fullscreenButton.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
         
-        view.addSubview(countDownLabel)
-        countDownLabel.text = "Countdown timer:\n 0"
-        countDownLabel.topAnchor.constraint(equalTo: fullscreenButton.bottomAnchor, constant: 20.0).isActive = true
-        countDownLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        countDownLabel.widthAnchor.constraint(equalToConstant: 300.0).isActive = true
-        countDownLabel.heightAnchor.constraint(equalToConstant: 80.0).isActive = true
+        controlPanel.addSubview(muteButton)
+        muteButton.addTarget(self, action: #selector(didTapMute), for: .touchUpInside)
+        muteButton.rightAnchor.constraint(equalTo: controlPanel.safeAreaLayoutGuide.rightAnchor, constant: -10.0).isActive = true
+        muteButton.bottomAnchor.constraint(equalTo: fullscreenButton.topAnchor).isActive = true
+        muteButton.widthAnchor.constraint(equalToConstant: 44.0).isActive = true
+        muteButton.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
         
-        view.addSubview(progressView)
+        controlPanel.addSubview(countDownLabel)
+        countDownLabel.rightAnchor.constraint(equalTo: fullscreenButton.leftAnchor).isActive = true
+        countDownLabel.bottomAnchor.constraint(equalTo: controlPanel.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        countDownLabel.widthAnchor.constraint(equalToConstant: 50.0).isActive = true
+        countDownLabel.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
+        
+        controlPanel.addSubview(progressView)
         progressView.addTarget(self, action: #selector(didChangePlaybackTime), for: .valueChanged)
         progressView.addTarget(self, action: #selector(didTouchProgressSlider), for: .touchDown)
-        progressView.topAnchor.constraint(equalTo: countDownLabel.bottomAnchor, constant: 20.0).isActive = true
-        progressView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        progressView.widthAnchor.constraint(equalToConstant: 300.0).isActive = true
+        progressView.leftAnchor.constraint(equalTo: controlPanel.safeAreaLayoutGuide.leftAnchor, constant: 10.0).isActive = true
+        progressView.rightAnchor.constraint(equalTo: countDownLabel.leftAnchor).isActive = true
+        progressView.bottomAnchor.constraint(equalTo: controlPanel.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        progressView.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
+        
+        playerView.addControlPanel(controlPanel)
     }
     
     @objc func didTapMute() {
+        muteButton.isSelected = !muteButton.isSelected
         playerView.toggleMute()
     }
     
@@ -141,7 +149,8 @@ private extension ViewController {
     }
     
     @objc func didTapFullscreen() {
-        playerView.fullscreen(enabled: true, rotateTo: .landscapeRight)
+        fullscreenButton.isSelected = !fullscreenButton.isSelected
+        playerView.fullscreen(enabled: fullscreenButton.isSelected, rotateTo: fullscreenButton.isSelected ? .landscapeRight: .portrait)
     }
     
     @objc func didChangePlaybackTime() {
@@ -166,7 +175,7 @@ extension ViewController: TrailerPlayerViewDelegate {
     }
     
     func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval) {
-        countDownLabel.text = "Countdown timer:\n \(Int(playerView.duration - time))"
+        countDownLabel.text = "\(Int(playerView.duration - time))"
         progressView.value = Float(time)
         progressView.maximumValue = Float(playerView.duration)
     }
