@@ -73,4 +73,4 @@ playerView.addControlPanel(controlPanel)
 ```
 預計 v1.3.0 提供
 ```
-#### 其它細節操作可參考 Sample code
+#### 細節操作可參考 Sample code
