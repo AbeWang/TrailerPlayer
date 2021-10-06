@@ -54,14 +54,14 @@ public class TrailerPlayerView: UIView {
     }
     
     @AutoLayout
-    public private(set) var containerView: UIView = {
+    private var containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .black
         return view
     }()
     
     @AutoLayout
-    public private(set) var thumbnailView: UIImageView = {
+    private var thumbnailView: UIImageView = {
         let view = UIImageView()
         view.clipsToBounds = true
         view.backgroundColor = .black
@@ -70,7 +70,7 @@ public class TrailerPlayerView: UIView {
     }()
     
     @AutoLayout
-    public private(set) var playerView: UIView = {
+    private var playerView: UIView = {
         let view = UIView()
         view.backgroundColor = .black
         view.isHidden = true
@@ -94,6 +94,12 @@ public class TrailerPlayerView: UIView {
     private var statusObserver: NSKeyValueObservation?
     private var timeControlStatusObserver: NSKeyValueObservation?
     private var previousTimeControlStatus: AVPlayer.TimeControlStatus?
+    
+    private weak var controlPanel: UIView?
+    private var isPanelShowing = false
+    private var panelAutoFadeOutWorkItem: DispatchWorkItem?
+    private var panelAutoFadeOutDuration: TimeInterval = 3.0
+    private var tapGesture: UITapGestureRecognizer?
     
     deinit {
         reset()
@@ -173,6 +179,31 @@ public extension TrailerPlayerView {
             UIDevice.current.setValue(orientation.rawValue, forKey: "orientation")
         }
     }
+    
+    func addControlPanel(_ view: UIView, autoFadeOutDuration duration: TimeInterval = 3.0) {
+        controlPanel = view
+        panelAutoFadeOutDuration = duration
+        
+        layout(view: view, into: playerView, animated: false)
+        
+        view.alpha = isPanelShowing ? 1.0: 0.0
+        view.layer.zPosition = 999
+    }
+    
+    func autoFadeOutControlPanelWithAnimation() {
+        guard controlPanel != nil else { return }
+        
+        cancelAutoFadeOutAnimation()
+
+        panelAutoFadeOutWorkItem = DispatchWorkItem { [weak self] in
+            self?.controlPanelAnimation(isShow: false)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + panelAutoFadeOutDuration, execute: panelAutoFadeOutWorkItem!)
+    }
+    
+    func cancelAutoFadeOutAnimation() {
+        panelAutoFadeOutWorkItem?.cancel()
+    }
 }
 
 private extension TrailerPlayerView {
@@ -187,6 +218,9 @@ private extension TrailerPlayerView {
         containerView.addSubview(loadingIndicator)
         loadingIndicator.centerXAnchor.constraint(equalTo: self.containerView.centerXAnchor).isActive = true
         loadingIndicator.centerYAnchor.constraint(equalTo: self.containerView.centerYAnchor).isActive = true
+        
+        tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapGestureTapped))
+        playerView.addGestureRecognizer(tapGesture!)
     }
     
     func fetchThumbnailImage(_ url: URL) {
@@ -327,6 +361,23 @@ private extension TrailerPlayerView {
         }
     }
     
+    func controlPanelAnimation(isShow: Bool) {
+        guard let panel = controlPanel else { return }
+        
+        isPanelShowing = isShow
+        
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self = self else { return }
+            panel.alpha = isShow ? 1.0: 0.0
+            self.layoutIfNeeded()
+        } completion: { [weak self] _ in
+            guard let self = self else { return }
+            if isShow {
+                self.autoFadeOutControlPanelWithAnimation()
+            }
+        }
+    }
+    
     @objc func playerDidEndPlaying() {
         guard let item = currentPlayingItem else { return }
         
@@ -353,6 +404,11 @@ private extension TrailerPlayerView {
     @objc func appDidEnterBackground() {
         guard status == .playing || status == .waitingToPlay else { return }
         shouldResumePlay = true
+    }
+    
+    @objc func onTapGestureTapped() {
+        guard controlPanel != nil else { return }
+        controlPanelAnimation(isShow: !isPanelShowing)
     }
 }
 
