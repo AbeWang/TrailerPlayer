@@ -10,7 +10,11 @@ import UIKit
 class ViewController: UIViewController {
 
     @AutoLayout
-    private var playerView = TrailerPlayerView()
+    private var playerView: TrailerPlayerView = {
+        let view = TrailerPlayerView()
+        view.enablePictureInPicture = true
+        return view
+    }()
     
     @AutoLayout
     private var controlPanel: UIView = {
@@ -43,8 +47,8 @@ class ViewController: UIViewController {
     private var fullscreenButton: UIButton = {
         let button = UIButton(type: .custom)
         button.tintColor = .white
-        button.setImage(UIImage(named: "normal-screen")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.setImage(UIImage(named: "fullscreen")?.withRenderingMode(.alwaysTemplate), for: .selected)
+        button.setImage(UIImage(named: "fullscreen")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(UIImage(named: "normal-screen")?.withRenderingMode(.alwaysTemplate), for: .selected)
         return button
     }()
     
@@ -178,5 +182,17 @@ extension ViewController: TrailerPlayerViewDelegate {
         countDownLabel.text = "\(Int(playerView.duration - time))"
         progressView.value = Float(time)
         progressView.maximumValue = Float(playerView.duration)
+    }
+    
+    func trailerPlayerView(_ view: TrailerPlayerView, didChangeStatus status: TrailerPlayerView.Status) {
+        switch status {
+        case .playing, .pause:
+            playPauseButton.isHidden = false
+            playPauseButton.isSelected = (status == .pause)
+        case .waitingToPlay:
+            playPauseButton.isHidden = true
+        default:
+            break
+        }
     }
 }

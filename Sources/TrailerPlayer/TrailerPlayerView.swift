@@ -12,6 +12,7 @@ import AVKit
 public protocol TrailerPlayerViewDelegate: AnyObject {
     func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView)
     func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval)
+    func trailerPlayerView(_ view: TrailerPlayerView, didChangeStatus status: TrailerPlayerView.Status)
 }
 
 public class TrailerPlayerView: UIView {
@@ -292,6 +293,8 @@ private extension TrailerPlayerView {
             default:
                 break
             }
+            
+            self.delegate?.trailerPlayerView(self, didChangeStatus: self.status)
         }
         
         playerLayer = AVPlayerLayer(player: player)
