@@ -9,6 +9,12 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    private var timeFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute, .second]
+        return formatter
+    }()
+    
     @AutoLayout
     private var playerView: TrailerPlayerView = {
         let view = TrailerPlayerView()
@@ -218,7 +224,7 @@ extension ViewController: TrailerPlayerViewDelegate {
     }
     
     func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval) {
-        countDownLabel.text = "\(Int(playerView.duration - time))"
+        countDownLabel.text = timeFormatter.string(from: (playerView.duration - time))
         progressView.value = Float(time)
         progressView.maximumValue = Float(playerView.duration)
     }
