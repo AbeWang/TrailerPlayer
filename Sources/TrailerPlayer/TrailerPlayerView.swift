@@ -377,12 +377,10 @@ private extension TrailerPlayerView {
         
         isPanelShowing = isShow
         
-        UIView.animate(withDuration: 0.25) { [weak self] in
-            guard let self = self else { return }
+        UIView.animate(withDuration: 0.25) {
             panel.alpha = isShow ? 1.0: 0.0
             self.layoutIfNeeded()
-        } completion: { [weak self] _ in
-            guard let self = self else { return }
+        } completion: { _ in
             if isShow {
                 self.autoFadeOutControlPanelWithAnimation()
             }
