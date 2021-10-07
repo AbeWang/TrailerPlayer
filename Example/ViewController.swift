@@ -87,7 +87,9 @@ class ViewController: UIViewController {
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        playerView.fullscreen(enabled: UIDevice.current.orientation.isLandscape)
+        let enableFullscreen = UIDevice.current.orientation.isLandscape
+        fullscreenButton.isSelected = enableFullscreen
+        playerView.fullscreen(enabled: enableFullscreen)
     }
 }
 
@@ -156,7 +158,8 @@ private extension ViewController {
     
     @objc func didTapFullscreen() {
         fullscreenButton.isSelected = !fullscreenButton.isSelected
-        playerView.fullscreen(enabled: fullscreenButton.isSelected, rotateTo: fullscreenButton.isSelected ? .landscapeRight: .portrait)
+        playerView.fullscreen(enabled: fullscreenButton.isSelected,
+                              rotateTo: fullscreenButton.isSelected ? .landscapeRight: .portrait)
         playerView.autoFadeOutControlPanelWithAnimation()
     }
     
