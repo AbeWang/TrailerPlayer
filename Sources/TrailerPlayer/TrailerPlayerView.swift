@@ -55,7 +55,7 @@ public class TrailerPlayerView: UIView {
     }
     
     @AutoLayout
-    private var containerView: UIView = {
+    public private(set) var containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .black
         return view

@@ -24,6 +24,14 @@ class ViewController: UIViewController {
     }()
     
     @AutoLayout
+    private var replayPanel: UIView = {
+        let view = UIView()
+        view.isHidden = true
+        view.backgroundColor = .black.withAlphaComponent(0.5)
+        return view
+    }()
+    
+    @AutoLayout
     private var muteButton: UIButton = {
         let button = UIButton(type: .custom)
         button.tintColor = .white
@@ -73,6 +81,14 @@ class ViewController: UIViewController {
         return view
     }()
     
+    @AutoLayout
+    private var replayButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.tintColor = .white
+        button.setImage(UIImage(named: "replay")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -102,6 +118,8 @@ private extension ViewController {
         playerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         playerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         playerView.heightAnchor.constraint(equalTo: playerView.widthAnchor, multiplier: 0.65).isActive = true
+        
+        // Control Panel
         
         controlPanel.addSubview(playPauseButton)
         playPauseButton.addTarget(self, action: #selector(didTapPlayPause), for: .touchUpInside)
@@ -139,6 +157,19 @@ private extension ViewController {
         progressView.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
         
         playerView.addControlPanel(controlPanel)
+        
+        // Replay Panel
+        
+        playerView.containerView.addSubview(replayPanel)
+        replayPanel.widthAnchor.constraint(equalTo: playerView.containerView.widthAnchor).isActive = true
+        replayPanel.heightAnchor.constraint(equalTo: playerView.containerView.heightAnchor).isActive = true
+        
+        replayPanel.addSubview(replayButton)
+        replayButton.addTarget(self, action: #selector(didTapReplay), for: .touchUpInside)
+        replayButton.centerXAnchor.constraint(equalTo: playerView.containerView.centerXAnchor).isActive = true
+        replayButton.centerYAnchor.constraint(equalTo: playerView.containerView.centerYAnchor).isActive = true
+        replayButton.widthAnchor.constraint(equalToConstant: 60.0).isActive = true
+        replayButton.heightAnchor.constraint(equalToConstant: 60.0).isActive = true
     }
     
     @objc func didTapMute() {
@@ -173,17 +204,17 @@ private extension ViewController {
         playerView.pause()
         playerView.cancelAutoFadeOutAnimation()
     }
+    
+    @objc func didTapReplay() {
+        replayPanel.isHidden = true
+        playerView.replay()
+    }
 }
 
 extension ViewController: TrailerPlayerViewDelegate {
     
     func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView) {
-        let controller = UIAlertController(title: "PlayerViewDidEndPlaying", message: nil, preferredStyle: .alert)
-        controller.addAction(UIAlertAction(title: "Replay", style: .default, handler: { _ in
-            view.replay()
-        }))
-        controller.addAction(UIAlertAction(title: "Close", style: .cancel, handler: nil))
-        present(controller, animated: true, completion: nil)
+        replayPanel.isHidden = false
     }
     
     func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval) {
