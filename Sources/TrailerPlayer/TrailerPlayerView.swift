@@ -185,10 +185,21 @@ public extension TrailerPlayerView {
         controlPanel = view
         panelAutoFadeOutDuration = duration
         
-        layout(view: view, into: playerView, animated: false)
+        tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapGestureTapped))
+        playerView.addGestureRecognizer(tapGesture!)
         
+        layout(view: view, into: playerView, animated: false)
         view.alpha = isPanelShowing ? 1.0: 0.0
         view.layer.zPosition = 999
+    }
+    
+    func removeControlPanel() {
+        controlPanel?.removeFromSuperview()
+        controlPanel = nil
+        
+        guard let gesture = tapGesture else { return }
+        playerView.removeGestureRecognizer(gesture)
+        tapGesture = nil
     }
     
     func autoFadeOutControlPanelWithAnimation() {
@@ -219,9 +230,6 @@ private extension TrailerPlayerView {
         containerView.addSubview(loadingIndicator)
         loadingIndicator.centerXAnchor.constraint(equalTo: self.containerView.centerXAnchor).isActive = true
         loadingIndicator.centerYAnchor.constraint(equalTo: self.containerView.centerYAnchor).isActive = true
-        
-        tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapGestureTapped))
-        playerView.addGestureRecognizer(tapGesture!)
     }
     
     func fetchThumbnailImage(_ url: URL) {
