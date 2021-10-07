@@ -3,6 +3,9 @@ iOS video player for trailer.
 
 https://user-images.githubusercontent.com/1064039/135829008-7afd2ce1-c4b5-4138-8976-c010df067e19.mov
 
+Icons by Icons8 (https://icons8.com)
+
+
 ## v1.2.0 [Pre-release]
 - Support control panel
 - Update sample code (use custom control panel)
