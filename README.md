@@ -5,9 +5,9 @@ https://user-images.githubusercontent.com/1064039/136514197-452bfecd-fe68-465d-9
 
 Icons by Icons8 (https://icons8.com)
 
-## v1.2.0 [Pre-release]
+## v1.2.0
 - Support control panel
-- Update sample code (use custom control panel)
+- Support replay panel
 - Fixed some known bugs
 
 ## v1.1.0
@@ -66,13 +66,16 @@ func trailerPlayerView(_ view: TrailerPlayerView, didChangeStatus status: Traile
 ```swift
 playerView.enablePictureInPicture = true
 ```
-#### [Optional] 設置控制面板
+#### [Optional] 設置面板
 ```swift
 let controlPanel: UIView = ... // your custom control panel
 playerView.addControlPanel(controlPanel)
+
+let replayPanel: UIView = ... // your custom replay panel
+playerView.addReplayPanel(replayPanel)
 ```
 #### [Optional] DRM 支援
 ```
-預計 v1.3.0 提供
+預計 v1.3.0
 ```
 #### 細節操作可參考 Sample code
