@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A0646AB7271031D900115627 /* ControlPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0646AB6271031D900115627 /* ControlPanel.swift */; };
+		A0646AB92710480500115627 /* ReplayPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0646AB82710480500115627 /* ReplayPanel.swift */; };
 		A0AA9778270C3773004DC5EF /* PropertyWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AA9775270C3773004DC5EF /* PropertyWrappers.swift */; };
 		A0AA9779270C3773004DC5EF /* TrailerPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AA9776270C3773004DC5EF /* TrailerPlayerView.swift */; };
 		A0AA977A270C3773004DC5EF /* TrailerPlayerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AA9777270C3773004DC5EF /* TrailerPlayerItem.swift */; };
@@ -17,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A0646AB6271031D900115627 /* ControlPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlPanel.swift; sourceTree = "<group>"; };
+		A0646AB82710480500115627 /* ReplayPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayPanel.swift; sourceTree = "<group>"; };
 		A0AA9775270C3773004DC5EF /* PropertyWrappers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyWrappers.swift; sourceTree = "<group>"; };
 		A0AA9776270C3773004DC5EF /* TrailerPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrailerPlayerView.swift; sourceTree = "<group>"; };
 		A0AA9777270C3773004DC5EF /* TrailerPlayerItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrailerPlayerItem.swift; sourceTree = "<group>"; };
@@ -80,6 +84,8 @@
 			children = (
 				A0C84FE22702C744007349EC /* AppDelegate.swift */,
 				A0C84FE62702C744007349EC /* ViewController.swift */,
+				A0646AB6271031D900115627 /* ControlPanel.swift */,
+				A0646AB82710480500115627 /* ReplayPanel.swift */,
 				A0C84FEB2702C745007349EC /* Assets.xcassets */,
 				A0C84FED2702C745007349EC /* LaunchScreen.storyboard */,
 				A0C84FF02702C745007349EC /* Info.plist */,
@@ -157,7 +163,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A0646AB7271031D900115627 /* ControlPanel.swift in Sources */,
 				A0AA9778270C3773004DC5EF /* PropertyWrappers.swift in Sources */,
+				A0646AB92710480500115627 /* ReplayPanel.swift in Sources */,
 				A0AA9779270C3773004DC5EF /* TrailerPlayerView.swift in Sources */,
 				A0C84FE72702C744007349EC /* ViewController.swift in Sources */,
 				A0AA977A270C3773004DC5EF /* TrailerPlayerItem.swift in Sources */,

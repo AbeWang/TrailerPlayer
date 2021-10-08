@@ -97,9 +97,10 @@ public class TrailerPlayerView: UIView {
     private var previousTimeControlStatus: AVPlayer.TimeControlStatus?
     
     private weak var controlPanel: UIView?
-    private var isPanelShowing = false
-    private var panelAutoFadeOutWorkItem: DispatchWorkItem?
-    private var panelAutoFadeOutDuration: TimeInterval = 3.0
+    private weak var replayPanel: UIView?
+    private var isControlPanelShowing = false
+    private var controlPanelAutoFadeOutWorkItem: DispatchWorkItem?
+    private var controlPanelAutoFadeOutDuration: TimeInterval = 3.0
     private var tapGesture: UITapGestureRecognizer?
     
     deinit {
@@ -163,6 +164,7 @@ public extension TrailerPlayerView {
     func seek(to time: TimeInterval) {
         player?.seek(to: CMTimeMakeWithSeconds(time, preferredTimescale: Int32(NSEC_PER_SEC)))
         playerView.isHidden = false
+        replayPanel?.isHidden = true
     }
     
     func toggleMute() {
@@ -183,13 +185,13 @@ public extension TrailerPlayerView {
     
     func addControlPanel(_ view: UIView, autoFadeOutDuration duration: TimeInterval = 3.0) {
         controlPanel = view
-        panelAutoFadeOutDuration = duration
+        controlPanelAutoFadeOutDuration = duration
         
         tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapGestureTapped))
         playerView.addGestureRecognizer(tapGesture!)
         
         layout(view: view, into: playerView, animated: false)
-        view.alpha = isPanelShowing ? 1.0: 0.0
+        view.alpha = isControlPanelShowing ? 1.0: 0.0
         view.layer.zPosition = 999
     }
     
@@ -202,19 +204,31 @@ public extension TrailerPlayerView {
         tapGesture = nil
     }
     
+    func addReplayPanel(_ view: UIView) {
+        replayPanel = view
+        
+        layout(view: view, into: containerView, animated: false)
+        view.isHidden = true
+    }
+    
+    func removeReplayPanel() {
+        replayPanel?.removeFromSuperview()
+        replayPanel = nil
+    }
+    
     func autoFadeOutControlPanelWithAnimation() {
         guard controlPanel != nil else { return }
         
         cancelAutoFadeOutAnimation()
 
-        panelAutoFadeOutWorkItem = DispatchWorkItem { [weak self] in
+        controlPanelAutoFadeOutWorkItem = DispatchWorkItem { [weak self] in
             self?.controlPanelAnimation(isShow: false)
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + panelAutoFadeOutDuration, execute: panelAutoFadeOutWorkItem!)
+        DispatchQueue.main.asyncAfter(deadline: .now() + controlPanelAutoFadeOutDuration, execute: controlPanelAutoFadeOutWorkItem!)
     }
     
     func cancelAutoFadeOutAnimation() {
-        panelAutoFadeOutWorkItem?.cancel()
+        controlPanelAutoFadeOutWorkItem?.cancel()
     }
 }
 
@@ -375,7 +389,7 @@ private extension TrailerPlayerView {
     func controlPanelAnimation(isShow: Bool) {
         guard let panel = controlPanel else { return }
         
-        isPanelShowing = isShow
+        isControlPanelShowing = isShow
         
         UIView.animate(withDuration: 0.25) {
             panel.alpha = isShow ? 1.0: 0.0
@@ -394,6 +408,8 @@ private extension TrailerPlayerView {
             replay()
         } else {
             playerView.isHidden = true
+            replayPanel?.isHidden = false
+            
             delegate?.trailerPlayerViewDidEndPlaying(self)
             if pipEnabled {
                 // Reset PIP
@@ -417,7 +433,7 @@ private extension TrailerPlayerView {
     
     @objc func onTapGestureTapped() {
         guard controlPanel != nil else { return }
-        controlPanelAnimation(isShow: !isPanelShowing)
+        controlPanelAnimation(isShow: !isControlPanelShowing)
     }
 }
 
