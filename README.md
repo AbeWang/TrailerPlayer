@@ -1,10 +1,9 @@
 # Trailer Player
-iOS video player for trailer.
+iOS video player for trailer. You can customize layout for the control panel.
 
-https://user-images.githubusercontent.com/1064039/135829008-7afd2ce1-c4b5-4138-8976-c010df067e19.mov
+https://user-images.githubusercontent.com/1064039/136514197-452bfecd-fe68-465d-9621-781056485286.mov
 
 Icons by Icons8 (https://icons8.com)
-
 
 ## v1.2.0 [Pre-release]
 - Support control panel
