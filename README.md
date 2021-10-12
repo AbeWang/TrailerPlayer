@@ -32,7 +32,7 @@ Icons by Icons8 (https://icons8.com)
 - [x] 不可在 Remote Control Center 裡顯示資訊。
 - [x] Preview 播完後回到 thumbnail。
 - [x] 如果用戶的網路，從連網 => 斷網 => 再連網的時候，trailer 會接續播放。
-- [ ] Support iOS 10~15
+- [x] Support iOS 10~15
 - [x] Support SPM
 
 ## How to use

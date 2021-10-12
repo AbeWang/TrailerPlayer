@@ -34,9 +34,13 @@ class ViewController: UIViewController {
         view.backgroundColor = .white
         
         view.addSubview(playerView)
-        playerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         playerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         playerView.heightAnchor.constraint(equalTo: playerView.widthAnchor, multiplier: 0.65).isActive = true
+        if #available(iOS 11.0, *) {
+            playerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        } else {
+            playerView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        }
         
         controlPanel.delegate = self
         playerView.addControlPanel(controlPanel)

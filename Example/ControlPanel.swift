@@ -125,31 +125,49 @@ private extension ControlPanel {
         
         addSubview(fullscreenButton)
         fullscreenButton.addTarget(self, action: #selector(didTapFullscreen), for: .touchUpInside)
-        fullscreenButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor).isActive = true
-        fullscreenButton.rightAnchor.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: -10.0).isActive = true
         fullscreenButton.widthAnchor.constraint(equalToConstant: 44.0).isActive = true
         fullscreenButton.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
+        if #available(iOS 11.0, *) {
+            fullscreenButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor).isActive = true
+            fullscreenButton.rightAnchor.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: -10.0).isActive = true
+        } else {
+            fullscreenButton.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+            fullscreenButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10.0).isActive = true
+        }
         
         addSubview(muteButton)
         muteButton.addTarget(self, action: #selector(didTapMute), for: .touchUpInside)
-        muteButton.rightAnchor.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: -10.0).isActive = true
         muteButton.bottomAnchor.constraint(equalTo: fullscreenButton.topAnchor).isActive = true
         muteButton.widthAnchor.constraint(equalToConstant: 44.0).isActive = true
         muteButton.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
+        if #available(iOS 11.0, *) {
+            muteButton.rightAnchor.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: -10.0).isActive = true
+        } else {
+            muteButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10.0).isActive = true
+        }
         
         addSubview(countDownLabel)
         countDownLabel.rightAnchor.constraint(equalTo: fullscreenButton.leftAnchor).isActive = true
-        countDownLabel.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor).isActive = true
         countDownLabel.widthAnchor.constraint(equalToConstant: 50.0).isActive = true
         countDownLabel.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
+        if #available(iOS 11.0, *) {
+            countDownLabel.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor).isActive = true
+        } else {
+            countDownLabel.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        }
         
         addSubview(progressView)
         progressView.addTarget(self, action: #selector(didChangePlaybackTime), for: .valueChanged)
         progressView.addTarget(self, action: #selector(didTouchDownProgressSlider), for: .touchDown)
-        progressView.leftAnchor.constraint(equalTo: safeAreaLayoutGuide.leftAnchor, constant: 10.0).isActive = true
         progressView.rightAnchor.constraint(equalTo: countDownLabel.leftAnchor).isActive = true
-        progressView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor).isActive = true
         progressView.heightAnchor.constraint(equalToConstant: 44.0).isActive = true
+        if #available(iOS 11.0, *) {
+            progressView.leftAnchor.constraint(equalTo: safeAreaLayoutGuide.leftAnchor, constant: 10.0).isActive = true
+            progressView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor).isActive = true
+        } else {
+            progressView.leftAnchor.constraint(equalTo: leftAnchor, constant: 10.0).isActive = true
+            progressView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        }
     }
     
     @objc func didTapPlayPause() {
