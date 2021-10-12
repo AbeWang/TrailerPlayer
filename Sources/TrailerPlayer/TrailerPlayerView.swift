@@ -9,22 +9,9 @@ import AVFoundation
 import UIKit
 import AVKit
 
-public protocol TrailerPlayerViewDelegate: AnyObject {
-    func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView)
-    func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval)
-    func trailerPlayerView(_ view: TrailerPlayerView, didChangeStatus status: TrailerPlayerView.Status)
-}
-
 public class TrailerPlayerView: UIView {
     
-    public enum Status {
-        case playing
-        case pause
-        case waitingToPlay
-        case unknown
-    }
-    
-    public weak var delegate: TrailerPlayerViewDelegate?
+    public weak var playbackDelegate: TrailerPlayerViewPlaybackDelegate?
     
     public var isMuted: Bool {
         player?.isMuted ?? true
@@ -44,7 +31,7 @@ public class TrailerPlayerView: UIView {
         return CMTimeGetSeconds(time)
     }
     
-    public var status: Status {
+    public var status: TrailerPlayerPlaybackStatus {
         guard let status = player?.timeControlStatus else { return .unknown }
         switch status {
         case .playing: return .playing
@@ -184,6 +171,8 @@ public extension TrailerPlayerView {
     }
     
     func addControlPanel(_ view: UIView, autoFadeOutDuration duration: TimeInterval = 3.0) {
+        removeControlPanel()
+        
         controlPanel = view
         controlPanelAutoFadeOutDuration = duration
         
@@ -205,6 +194,8 @@ public extension TrailerPlayerView {
     }
     
     func addReplayPanel(_ view: UIView) {
+        removeReplayPanel()
+        
         replayPanel = view
         
         layout(view: view, into: containerView, animated: false)
@@ -279,23 +270,23 @@ private extension TrailerPlayerView {
             guard let self = self, let item = self.player?.currentItem else { return }
             switch item.status {
             case .readyToPlay:
-                print("[TrailerPlayerView] ready to play")
+                self.playbackDelegate?.trailerPlayerViewReadyToPlay(self)
                 self.playerView.isHidden = false
             case .failed:
-                print("[TrailerPlayerView] item failed")
+                self.playbackDelegate?.trailerPlayerView(self, playbackDidFailed: .loadFailed)
             default:
-                print("[TrailerPlayerView] unknown error")
+                self.playbackDelegate?.trailerPlayerView(self, playbackDidFailed: .unknown)
             }
         }
         
-        periodicTimeObserver = player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(0.1, preferredTimescale: Int32(NSEC_PER_SEC)), queue: DispatchQueue.main) { [weak self] _ in
+        periodicTimeObserver = player?.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: DispatchQueue.main) { [weak self] _ in
             guard
                 let self = self,
                 let player = self.player,
                 player.timeControlStatus == .playing
             else { return }
             
-            self.delegate?.trailerPlayerView(self, didUpdatePlaybackTime: CMTimeGetSeconds(player.currentTime()))
+            self.playbackDelegate?.trailerPlayerView(self, didUpdatePlaybackTime: CMTimeGetSeconds(player.currentTime()))
         }
         
         timeControlStatusObserver = player?.observe(\.timeControlStatus, options: [.old, .new]) { [weak self] player, _ in
@@ -316,7 +307,7 @@ private extension TrailerPlayerView {
                 break
             }
             
-            self.delegate?.trailerPlayerView(self, didChangeStatus: self.status)
+            self.playbackDelegate?.trailerPlayerView(self, didChangePlaybackStatus: self.status)
         }
         
         playerLayer = AVPlayerLayer(player: player)
@@ -410,7 +401,7 @@ private extension TrailerPlayerView {
             playerView.isHidden = true
             replayPanel?.isHidden = false
             
-            delegate?.trailerPlayerViewDidEndPlaying(self)
+            playbackDelegate?.trailerPlayerViewDidEndPlaying(self)
             if pipEnabled {
                 // Reset PIP
                 pictureInPictureController = nil

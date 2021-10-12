@@ -5,6 +5,9 @@ https://user-images.githubusercontent.com/1064039/136514197-452bfecd-fe68-465d-9
 
 Icons by Icons8 (https://icons8.com)
 
+## v1.2.1
+- Code refactoring
+
 ## v1.2.0
 - Support control panel
 - Support replay panel
@@ -42,7 +45,7 @@ let playerView = TrailerPlayerView()
 let item = TrailerPlayerItem(
             url: URL(string: "..."),
             thumbnailUrl: URL(string: "..."))
-playerView.delegate = self
+playerView.playbackDelegate = self
 playerView.set(item: item)
 ```
 #### TrailerPlayerItem 細節設定
@@ -53,14 +56,18 @@ required public init(url: URL? = nil,          // 預告片 url
                      autoReplay: Bool = false, // 播放完畢後，是否自動重新播放
                      mute: Bool = true)        // 預設播放為靜音
 ```
-#### TrailerPlayerViewDelegate
+#### TrailerPlayerViewPlaybackDelegate
 ```swift
 // 如果 autoReplay 為 false 時，播放完畢會觸發
 func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView)
 // 當 player 播放時，可透過此 callback 更新播放時間
 func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval)
 // 當 player 狀態改變時，可透過此 callback 更新控制面板上的播放狀態
-func trailerPlayerView(_ view: TrailerPlayerView, didChangeStatus status: TrailerPlayerView.Status)
+func trailerPlayerView(_ view: TrailerPlayerView, didChangePlaybackStatus status: TrailerPlayerPlaybackStatus)
+// 當 player item 狀態變為 readyToPlay 時觸發
+func trailerPlayerViewReadyToPlay(_ view: TrailerPlayerView)
+// 當 player 發生錯誤時觸發
+func trailerPlayerView(_ view: TrailerPlayerView, playbackDidFailed error: TrailerPlayerPlaybackError)
 ```
 #### [Optional] PIP 支援
 ```swift
@@ -78,4 +85,4 @@ playerView.addReplayPanel(replayPanel)
 ```
 預計 v1.3.0
 ```
-#### 細節操作可參考 Sample code
+#### 操作細節可參考 Sample code

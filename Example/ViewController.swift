@@ -51,7 +51,7 @@ class ViewController: UIViewController {
         let item = TrailerPlayerItem(
             url: URL(string: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"),
             thumbnailUrl: URL(string: "https://upload.cc/i1/2021/10/04/qGNK3M.png"))
-        playerView.delegate = self
+        playerView.playbackDelegate = self
         playerView.set(item: item)
     }
     
@@ -63,17 +63,14 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController: TrailerPlayerViewDelegate {
-    
-    func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView) {
-    }
+extension ViewController: TrailerPlayerViewPlaybackDelegate {
     
     func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval) {
         controlPanel.setProgress(withValue: time, duration: playerView.duration)
     }
     
-    func trailerPlayerView(_ view: TrailerPlayerView, didChangeStatus status: TrailerPlayerView.Status) {
-        controlPanel.setPlayPauseStatus(status)
+    func trailerPlayerView(_ view: TrailerPlayerView, didChangePlaybackStatus status: TrailerPlayerPlaybackStatus) {
+        controlPanel.setPlaybackStatus(status)
     }
 }
 

@@ -98,7 +98,7 @@ extension ControlPanel {
         countDownLabel.text = timeFormatter.string(from: duration - value)
     }
     
-    func setPlayPauseStatus(_ status: TrailerPlayerView.Status) {
+    func setPlaybackStatus(_ status: TrailerPlayerPlaybackStatus) {
         switch status {
         case .playing, .pause:
             playPauseButton.isHidden = false
