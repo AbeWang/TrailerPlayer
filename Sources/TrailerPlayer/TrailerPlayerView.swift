@@ -12,6 +12,7 @@ import AVKit
 public class TrailerPlayerView: UIView {
     
     public weak var playbackDelegate: TrailerPlayerViewPlaybackDelegate?
+    public weak var DRMDelegate: TrailerPlayerViewDRMDelegate?
     
     public var isMuted: Bool {
         player?.isMuted ?? true
@@ -72,6 +73,8 @@ public class TrailerPlayerView: UIView {
         return view
     }()
     
+    private let fairplayQueue = DispatchQueue(label: "abewang.fairplay.queue")
+    
     private var player: TrailerPlayer?
     private var playerLayer: AVPlayerLayer?
     private var pictureInPictureController: AVPictureInPictureController?
@@ -126,12 +129,8 @@ public extension TrailerPlayerView {
         if let url = item.thumbnailUrl {
             fetchThumbnailImage(url)
         }
-        if let url = item.videoUrl {
-            setupPlayer(url)
-            if item.autoPlay {
-                player?.play()
-            }
-            player?.isMuted = item.mute
+        if item.videoUrl != nil {
+            setupPlayer(item)
         }
     }
     
@@ -255,11 +254,17 @@ private extension TrailerPlayerView {
         .resume()
     }
     
-    func setupPlayer(_ url: URL) {
+    func setupPlayer(_ item: TrailerPlayerItem) {
+        guard let url = item.videoUrl else { return }
+        
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
         
         let playerItem = AVPlayerItem(url: url)
         player = TrailerPlayer(playerItem: playerItem)
+        
+        if let asset = playerItem.asset as? AVURLAsset, item.isDRMContent {
+            asset.resourceLoader.setDelegate(self, queue: fairplayQueue)
+        }
         
         previousTimeControlStatus = player?.timeControlStatus
         
@@ -315,6 +320,11 @@ private extension TrailerPlayerView {
         playerView.layer.addSublayer(playerLayer!)
         
         setPictureInPicture(enabled: pipEnabled)
+        
+        player?.isMuted = item.mute
+        if item.autoPlay {
+            player?.play()
+        }
     }
     
     func reset() {
@@ -426,6 +436,61 @@ private extension TrailerPlayerView {
     @objc func onTapGestureTapped() {
         guard controlPanel != nil else { return }
         controlPanelAnimation(isShow: !isControlPanelShowing)
+    }
+}
+
+extension TrailerPlayerView: AVAssetResourceLoaderDelegate {
+    
+    public func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
+        guard let url = loadingRequest.request.url else {
+            loadingRequest.finishLoading(with: TrailerPlayerDRMError.noRequestUrl)
+            return false
+        }
+        
+        print("[TrailerPlayer] resource loading: \(url)")
+        
+        guard
+            let certificateUrl = DRMDelegate?.certificateURL(for: self),
+            let certificateData = try? Data(contentsOf: certificateUrl)
+        else {
+            loadingRequest.finishLoading(with: TrailerPlayerDRMError.noCertificateData)
+            return false
+        }
+        
+        let contentId = DRMDelegate?.contentID(for: self) ?? url.host
+        guard
+            let contentIdData = contentId?.data(using: .utf8),
+            let SPCData = try? loadingRequest.streamingContentKeyRequestData(forApp: certificateData, contentIdentifier: contentIdData, options: nil)
+        else {
+            loadingRequest.finishLoading(with: TrailerPlayerDRMError.noSPCData)
+            return false
+        }
+        
+        guard let ckcUrl = DRMDelegate?.contentKeyContextURL(for: self) else {
+            loadingRequest.finishLoading(with: TrailerPlayerDRMError.noCKCUrl)
+            return false
+        }
+        
+        var ckcRequest = URLRequest(url: ckcUrl)
+        ckcRequest.httpMethod = "POST"
+        ckcRequest.httpBody = SPCData
+        if let fields = DRMDelegate?.ckcRequestHeaderFields(for: self) {
+            fields.forEach { headerField, value in
+                ckcRequest.addValue(value, forHTTPHeaderField: headerField)
+            }
+        }
+        
+        URLSession.shared.dataTask(with: ckcRequest) { data, response, error in
+            guard let ckcData = data else {
+                loadingRequest.finishLoading(with: TrailerPlayerDRMError.noCKCData)
+                return
+            }
+            loadingRequest.dataRequest?.respond(with: ckcData)
+            loadingRequest.finishLoading()
+        }
+        .resume()
+        
+        return true
     }
 }
 
