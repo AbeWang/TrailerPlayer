@@ -12,6 +12,8 @@
 		A087314B27157D3C0016081C /* TrailerPlayerViewPlaybackDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A087314A27157D3C0016081C /* TrailerPlayerViewPlaybackDelegate.swift */; };
 		A087314D27157F240016081C /* TrailerPlayerPlaybackStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = A087314C27157F240016081C /* TrailerPlayerPlaybackStatus.swift */; };
 		A087314F2715800D0016081C /* TrailerPlayerPlaybackError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A087314E2715800D0016081C /* TrailerPlayerPlaybackError.swift */; };
+		A08731512716956C0016081C /* TrailerPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08731502716956B0016081C /* TrailerPlayer.swift */; };
+		A087315327169B340016081C /* TrailerPlayerViewDRMDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A087315227169B340016081C /* TrailerPlayerViewDRMDelegate.swift */; };
 		A0AA9778270C3773004DC5EF /* AutoLayoutWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AA9775270C3773004DC5EF /* AutoLayoutWrapper.swift */; };
 		A0AA9779270C3773004DC5EF /* TrailerPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AA9776270C3773004DC5EF /* TrailerPlayerView.swift */; };
 		A0AA977A270C3773004DC5EF /* TrailerPlayerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AA9777270C3773004DC5EF /* TrailerPlayerItem.swift */; };
@@ -27,6 +29,8 @@
 		A087314A27157D3C0016081C /* TrailerPlayerViewPlaybackDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailerPlayerViewPlaybackDelegate.swift; sourceTree = "<group>"; };
 		A087314C27157F240016081C /* TrailerPlayerPlaybackStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailerPlayerPlaybackStatus.swift; sourceTree = "<group>"; };
 		A087314E2715800D0016081C /* TrailerPlayerPlaybackError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailerPlayerPlaybackError.swift; sourceTree = "<group>"; };
+		A08731502716956B0016081C /* TrailerPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailerPlayer.swift; sourceTree = "<group>"; };
+		A087315227169B340016081C /* TrailerPlayerViewDRMDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailerPlayerViewDRMDelegate.swift; sourceTree = "<group>"; };
 		A0AA9775270C3773004DC5EF /* AutoLayoutWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoLayoutWrapper.swift; sourceTree = "<group>"; };
 		A0AA9776270C3773004DC5EF /* TrailerPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrailerPlayerView.swift; sourceTree = "<group>"; };
 		A0AA9777270C3773004DC5EF /* TrailerPlayerItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrailerPlayerItem.swift; sourceTree = "<group>"; };
@@ -62,6 +66,7 @@
 			isa = PBXGroup;
 			children = (
 				A087314A27157D3C0016081C /* TrailerPlayerViewPlaybackDelegate.swift */,
+				A087315227169B340016081C /* TrailerPlayerViewDRMDelegate.swift */,
 			);
 			path = Delegates;
 			sourceTree = "<group>";
@@ -77,6 +82,7 @@
 		A087314927157CBB0016081C /* Player */ = {
 			isa = PBXGroup;
 			children = (
+				A08731502716956B0016081C /* TrailerPlayer.swift */,
 				A0AA9777270C3773004DC5EF /* TrailerPlayerItem.swift */,
 			);
 			path = Player;
@@ -210,9 +216,11 @@
 				A0AA9779270C3773004DC5EF /* TrailerPlayerView.swift in Sources */,
 				A087314F2715800D0016081C /* TrailerPlayerPlaybackError.swift in Sources */,
 				A0C84FE72702C744007349EC /* ViewController.swift in Sources */,
+				A087315327169B340016081C /* TrailerPlayerViewDRMDelegate.swift in Sources */,
 				A087314D27157F240016081C /* TrailerPlayerPlaybackStatus.swift in Sources */,
 				A0AA977A270C3773004DC5EF /* TrailerPlayerItem.swift in Sources */,
 				A0C84FE32702C744007349EC /* AppDelegate.swift in Sources */,
+				A08731512716956C0016081C /* TrailerPlayer.swift in Sources */,
 				A087314B27157D3C0016081C /* TrailerPlayerViewPlaybackDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

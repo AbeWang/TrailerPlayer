@@ -72,7 +72,7 @@ public class TrailerPlayerView: UIView {
         return view
     }()
     
-    private var player: AVPlayer?
+    private var player: TrailerPlayer?
     private var playerLayer: AVPlayerLayer?
     private var pictureInPictureController: AVPictureInPictureController?
     private var currentPlayingItem: TrailerPlayerItem?
@@ -259,7 +259,8 @@ private extension TrailerPlayerView {
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
         
         let playerItem = AVPlayerItem(url: url)
-        player = AVPlayer(playerItem: playerItem)
+        player = TrailerPlayer(playerItem: playerItem)
+        
         previousTimeControlStatus = player?.timeControlStatus
         
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
