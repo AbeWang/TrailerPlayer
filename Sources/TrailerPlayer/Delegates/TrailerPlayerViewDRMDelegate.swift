@@ -8,15 +8,15 @@
 import Foundation
 
 public protocol TrailerPlayerViewDRMDelegate: AnyObject {
-    func contentID(for playerView: TrailerPlayerView) -> String?
-    func certificateURL(for playerView: TrailerPlayerView) -> URL
-    func contentKeyContextURL(for playerView: TrailerPlayerView) -> URL
+    func contentId(for playerView: TrailerPlayerView) -> String?
+    func ckcUrl(for playerView: TrailerPlayerView) -> URL
+    func certUrl(for playerView: TrailerPlayerView) -> URL
     func ckcRequestHeaderFields(for playerView: TrailerPlayerView) -> [(headerField: String, value: String)]?
 }
 
 public extension TrailerPlayerViewDRMDelegate {
     
-    func contentID(for playerView: TrailerPlayerView) -> String? {
+    func contentId(for playerView: TrailerPlayerView) -> String? {
         return nil
     }
     

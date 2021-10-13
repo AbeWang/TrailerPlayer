@@ -1,9 +1,13 @@
 # Trailer Player
 iOS video player for trailer. You can customize layout for the control panel.
+Support PiP and DRM. 
 
 https://user-images.githubusercontent.com/1064039/136514197-452bfecd-fe68-465d-9621-781056485286.mov
 
 Icons by Icons8 (https://icons8.com)
+
+## v1.3.0
+- Support DRM (FairPlay)
 
 ## v1.2.1
 - Code refactoring
@@ -50,11 +54,12 @@ playerView.set(item: item)
 ```
 #### TrailerPlayerItem 細節設定
 ```swift
-required public init(url: URL? = nil,          // 預告片 url
-                     thumbnailUrl: URL? = nil, // 縮圖 url
-                     autoPlay: Bool = true,    // 自動播放，否則自行呼叫 play()
-                     autoReplay: Bool = false, // 播放完畢後，是否自動重新播放
-                     mute: Bool = true)        // 預設播放為靜音
+required public init(url: URL? = nil,            // 預告片 url
+                     thumbnailUrl: URL? = nil,   // 縮圖 url
+                     autoPlay: Bool = true,      // 自動播放，否則自行呼叫 play()
+                     autoReplay: Bool = false,   // 播放完畢後，是否自動重新播放
+                     mute: Bool = true,          // 預設播放為靜音
+                     isDRMContent: Bool = false) // 是否為 DRM 內容
 ```
 #### TrailerPlayerViewPlaybackDelegate
 ```swift
@@ -66,10 +71,10 @@ func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: Ti
 func trailerPlayerView(_ view: TrailerPlayerView, didChangePlaybackStatus status: TrailerPlayerPlaybackStatus)
 // 當 player item 狀態變為 readyToPlay 時觸發
 func trailerPlayerViewReadyToPlay(_ view: TrailerPlayerView)
-// 當 player 發生錯誤時觸發
+// 當 player 播放發生錯誤時觸發
 func trailerPlayerView(_ view: TrailerPlayerView, playbackDidFailed error: TrailerPlayerPlaybackError)
 ```
-#### [Optional] PIP 支援
+#### [Optional] PiP 支援
 ```swift
 playerView.enablePictureInPicture = true
 ```
@@ -82,7 +87,37 @@ let replayPanel: UIView = ... // your custom replay panel
 playerView.addReplayPanel(replayPanel)
 ```
 #### [Optional] DRM 支援
+```swift
+let playerView = TrailerPlayerView()
+let item = TrailerPlayerItem(
+            url: URL(string: "..."),
+            thumbnailUrl: URL(string: "..."),
+            isDRMContent: true)
+playerView.playbackDelegate = self
+playerView.DRMDelegate = self
+playerView.set(item: item)
+
+// DRM Delegate
+extension ViewController: TrailerPlayerViewDRMDelegate {
+    
+    func certUrl(for playerView: TrailerPlayerView) -> URL {
+        return URL(string: ...) // your certificate url
+    }
+    
+    func ckcUrl(for playerView: TrailerPlayerView) -> URL {
+        return URL(string: ...) // your ckc url
+    }
+}
 ```
-預計 v1.3.0
+#### TrailerPlayerViewDRMDelegate
+```swift
+// CKC(Content Key Context) URL
+func ckcUrl(for playerView: TrailerPlayerView) -> URL
+// Certificate URL
+func certUrl(for playerView: TrailerPlayerView) -> URL
+// Optional: content Id for SPC(Server Playback Context) message
+func contentId(for playerView: TrailerPlayerView) -> String?
+// Optional: HTTP header fields for CKC request
+func ckcRequestHeaderFields(for playerView: TrailerPlayerView) -> [(headerField: String, value: String)]?
 ```
 #### 操作細節可參考 Sample code

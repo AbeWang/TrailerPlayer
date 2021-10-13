@@ -442,22 +442,24 @@ private extension TrailerPlayerView {
 extension TrailerPlayerView: AVAssetResourceLoaderDelegate {
     
     public func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-        guard let url = loadingRequest.request.url else {
+        guard
+            let url = loadingRequest.request.url,
+            let scheme = url.scheme,
+            scheme == "skd"
+        else {
             loadingRequest.finishLoading(with: TrailerPlayerDRMError.noRequestUrl)
             return false
         }
         
-        print("[TrailerPlayer] resource loading: \(url)")
-        
         guard
-            let certificateUrl = DRMDelegate?.certificateURL(for: self),
+            let certificateUrl = DRMDelegate?.certUrl(for: self),
             let certificateData = try? Data(contentsOf: certificateUrl)
         else {
             loadingRequest.finishLoading(with: TrailerPlayerDRMError.noCertificateData)
             return false
         }
         
-        let contentId = DRMDelegate?.contentID(for: self) ?? url.host
+        let contentId = DRMDelegate?.contentId(for: self) ?? url.host
         guard
             let contentIdData = contentId?.data(using: .utf8),
             let SPCData = try? loadingRequest.streamingContentKeyRequestData(forApp: certificateData, contentIdentifier: contentIdData, options: nil)
@@ -466,7 +468,7 @@ extension TrailerPlayerView: AVAssetResourceLoaderDelegate {
             return false
         }
         
-        guard let ckcUrl = DRMDelegate?.contentKeyContextURL(for: self) else {
+        guard let ckcUrl = DRMDelegate?.ckcUrl(for: self) else {
             loadingRequest.finishLoading(with: TrailerPlayerDRMError.noCKCUrl)
             return false
         }
