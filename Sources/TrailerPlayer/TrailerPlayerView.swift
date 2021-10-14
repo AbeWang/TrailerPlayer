@@ -11,7 +11,7 @@ import AVKit
 
 public class TrailerPlayerView: UIView {
     
-    public weak var playbackDelegate: TrailerPlayerViewPlaybackDelegate?
+    public weak var playbackDelegate: TrailerPlayerPlaybackDelegate?
     public weak var DRMDelegate: TrailerPlayerDRMDelegate?
     
     public var isMuted: Bool {
@@ -72,10 +72,6 @@ public class TrailerPlayerView: UIView {
     private var currentPlayingItem: TrailerPlayerItem?
     private var shouldResumePlay = false
     private var pipEnabled = false
-    private var periodicTimeObserver: Any?
-    private var statusObserver: NSKeyValueObservation?
-    private var timeControlStatusObserver: NSKeyValueObservation?
-    private var previousTimeControlStatus: AVPlayer.TimeControlStatus?
     
     private weak var controlPanel: UIView?
     private weak var replayPanel: UIView?
@@ -255,54 +251,22 @@ private extension TrailerPlayerView {
         player = TrailerPlayer(playerItem: playerItem, isDRMContent: item.isDRMContent)
         player?.handler = self
         
-        previousTimeControlStatus = player?.timeControlStatus
-        
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playerDidEndPlaying), name: .AVPlayerItemDidPlayToEndTime, object: playerItem)
         
-        statusObserver = playerItem.observe(\.status, options: [.new]) { [weak self] _, _ in
-            guard let self = self, let item = self.player?.currentItem else { return }
-            switch item.status {
-            case .readyToPlay:
-                self.playbackDelegate?.trailerPlayerViewReadyToPlay(self)
-                self.playerView.isHidden = false
-            case .failed:
-                self.playbackDelegate?.trailerPlayerView(self, playbackDidFailed: .loadFailed)
-            default:
-                self.playbackDelegate?.trailerPlayerView(self, playbackDidFailed: .unknown)
-            }
-        }
-        
-        periodicTimeObserver = player?.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: DispatchQueue.main) { [weak self] _ in
-            guard
-                let self = self,
-                let player = self.player,
-                player.timeControlStatus == .playing
-            else { return }
-            
-            self.playbackDelegate?.trailerPlayerView(self, didUpdatePlaybackTime: CMTimeGetSeconds(player.currentTime()))
-        }
-        
-        timeControlStatusObserver = player?.observe(\.timeControlStatus, options: [.old, .new]) { [weak self] player, _ in
+        player?.isReadyToPlayCallback = { [weak self] in
             guard let self = self else { return }
-            
-            // newValue and oldValue always nil when observing .timeControlStatus
-            // https://bugs.swift.org/browse/SR-5872
-            let newValue = player.timeControlStatus
-            let oldValue = self.previousTimeControlStatus
-            self.previousTimeControlStatus = newValue
-
-            switch (oldValue, newValue) {
-            case (.waitingToPlayAtSpecifiedRate, _) where newValue != .waitingToPlayAtSpecifiedRate:
-                self.loadingIndicator.stopAnimating()
-            case (_, .waitingToPlayAtSpecifiedRate) where oldValue != .waitingToPlayAtSpecifiedRate:
+            self.playerView.isHidden = false
+        }
+        
+        player?.isBufferingCallback = { [weak self] buffering in
+            guard let self = self else { return }
+            if buffering {
                 self.loadingIndicator.startAnimating()
-            default:
-                break
+            } else {
+                self.loadingIndicator.stopAnimating()
             }
-            
-            self.playbackDelegate?.trailerPlayerView(self, didChangePlaybackStatus: self.status)
         }
         
         playerLayer = AVPlayerLayer(player: player)
@@ -320,20 +284,8 @@ private extension TrailerPlayerView {
         NotificationCenter.default.removeObserver(self)
         
         currentPlayingItem = nil
-        previousTimeControlStatus = nil
         
         thumbnailView.image = nil
-        
-        if let observer = periodicTimeObserver {
-            player?.removeTimeObserver(observer)
-            periodicTimeObserver = nil
-        }
-        
-        statusObserver?.invalidate()
-        statusObserver = nil
-        
-        timeControlStatusObserver?.invalidate()
-        timeControlStatusObserver = nil
         
         pictureInPictureController = nil
         
@@ -401,7 +353,6 @@ private extension TrailerPlayerView {
             playerView.isHidden = true
             replayPanel?.isHidden = false
             
-            playbackDelegate?.trailerPlayerViewDidEndPlaying(self)
             if pipEnabled {
                 // Reset PIP
                 pictureInPictureController = nil

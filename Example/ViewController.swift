@@ -63,13 +63,13 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController: TrailerPlayerViewPlaybackDelegate {
+extension ViewController: TrailerPlayerPlaybackDelegate {
     
-    func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval) {
+    func trailerPlayer(_ player: TrailerPlayer, didUpdatePlaybackTime time: TimeInterval) {
         controlPanel.setProgress(withValue: time, duration: playerView.duration)
     }
     
-    func trailerPlayerView(_ view: TrailerPlayerView, didChangePlaybackStatus status: TrailerPlayerPlaybackStatus) {
+    func trailerPlayer(_ player: TrailerPlayer, didChangePlaybackStatus status: TrailerPlayerPlaybackStatus) {
         controlPanel.setPlaybackStatus(status)
     }
 }

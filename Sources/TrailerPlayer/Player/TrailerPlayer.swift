@@ -12,7 +12,17 @@ public class TrailerPlayer: AVPlayer {
  
     private let fairplayQueue = DispatchQueue(label: "trailerPlayer.fairplay.queue")
     
+    private var previousTimeControlStatus: TimeControlStatus = .paused
+    private var periodicTimeObserver: Any?
+    private var statusObserver: NSKeyValueObservation?
+    private var timeControlStatusObserver: NSKeyValueObservation?
+    
     public weak var handler: TrailerPlayerView?
+    
+    public private(set) var isDRMContent = false
+    
+    public var isReadyToPlayCallback: (() -> Void)?
+    public var isBufferingCallback: ((Bool) -> Void)?
     
     public var duration: TimeInterval {
         guard let time = currentItem?.duration else { return 0.0 }
@@ -35,11 +45,8 @@ public class TrailerPlayer: AVPlayer {
     public required init(playerItem item: AVPlayerItem, isDRMContent drmContent: Bool = false) {
         super.init(playerItem: item)
         
-        if let asset = item.asset as? AVURLAsset, drmContent {
-            asset.resourceLoader.setDelegate(self, queue: fairplayQueue)
-        }
-        
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+        isDRMContent = drmContent
+        setup()
     }
     
     override public init() {
@@ -65,7 +72,64 @@ public extension TrailerPlayer {
 
 private extension TrailerPlayer {
     
+    func setup() {
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+
+        if let asset = currentItem?.asset as? AVURLAsset, isDRMContent {
+            asset.resourceLoader.setDelegate(self, queue: fairplayQueue)
+        }
+        
+        periodicTimeObserver = addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: DispatchQueue.main) { [weak self] _ in
+            guard let self = self, self.timeControlStatus == .playing else { return }
+            self.handler?.playbackDelegate?.trailerPlayer(self, didUpdatePlaybackTime: CMTimeGetSeconds(self.currentTime()))
+        }
+        
+        statusObserver = currentItem?.observe(\.status, options: [.new]) { [weak self] _, _ in
+            guard let self = self, let item = self.currentItem else { return }
+            switch item.status {
+            case .readyToPlay:
+                self.handler?.playbackDelegate?.trailerPlayerReadyToPlay(self)
+                self.isReadyToPlayCallback?()
+            case .failed:
+                self.handler?.playbackDelegate?.trailerPlayer(self, playbackDidFailed: .loadFailed)
+            default:
+                self.handler?.playbackDelegate?.trailerPlayer(self, playbackDidFailed: .unknown)
+            }
+        }
+        
+        timeControlStatusObserver = observe(\.timeControlStatus, options: [.old, .new]) { [weak self] _, _ in
+            guard let self = self else { return }
+            
+            // newValue and oldValue always nil when observing .timeControlStatus
+            // https://bugs.swift.org/browse/SR-5872
+            let newValue = self.timeControlStatus
+            let oldValue = self.previousTimeControlStatus
+            self.previousTimeControlStatus = newValue
+
+            switch (oldValue, newValue) {
+            case (.waitingToPlayAtSpecifiedRate, _) where newValue != .waitingToPlayAtSpecifiedRate:
+                self.isBufferingCallback?(false)
+            case (_, .waitingToPlayAtSpecifiedRate) where oldValue != .waitingToPlayAtSpecifiedRate:
+                self.isBufferingCallback?(true)
+            default:
+                break
+            }
+            
+            self.handler?.playbackDelegate?.trailerPlayer(self, didChangePlaybackStatus: self.playbackStatus)
+        }
+    }
+    
     func reset() {
+        if let observer = periodicTimeObserver {
+            removeTimeObserver(observer)
+            periodicTimeObserver = nil
+        }
+        
+        statusObserver?.invalidate()
+        statusObserver = nil
+        
+        timeControlStatusObserver?.invalidate()
+        timeControlStatusObserver = nil
     }
 }
 
