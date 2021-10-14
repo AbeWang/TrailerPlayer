@@ -12,14 +12,14 @@ import AVKit
 public class TrailerPlayerView: UIView {
     
     public weak var playbackDelegate: TrailerPlayerViewPlaybackDelegate?
-    public weak var DRMDelegate: TrailerPlayerViewDRMDelegate?
+    public weak var DRMDelegate: TrailerPlayerDRMDelegate?
     
     public var isMuted: Bool {
         player?.isMuted ?? true
     }
     
     public var canUseFullscreen: Bool {
-        currentPlayingItem?.videoUrl != nil
+        player != nil
     }
     
     public var enablePictureInPicture: Bool {
@@ -28,18 +28,11 @@ public class TrailerPlayerView: UIView {
     }
     
     public var duration: TimeInterval {
-        guard let time = player?.currentItem?.duration else { return 0.0 }
-        return CMTimeGetSeconds(time)
+        player?.duration ?? 0.0
     }
     
     public var status: TrailerPlayerPlaybackStatus {
-        guard let status = player?.timeControlStatus else { return .unknown }
-        switch status {
-        case .playing: return .playing
-        case .paused: return .pause
-        case .waitingToPlayAtSpecifiedRate: return .waitingToPlay
-        default: return .unknown
-        }
+        player?.playbackStatus ?? .unknown
     }
     
     @AutoLayout
@@ -72,8 +65,6 @@ public class TrailerPlayerView: UIView {
         view.style = .whiteLarge
         return view
     }()
-    
-    private let fairplayQueue = DispatchQueue(label: "abewang.fairplay.queue")
     
     private var player: TrailerPlayer?
     private var playerLayer: AVPlayerLayer?
@@ -143,19 +134,21 @@ public extension TrailerPlayerView {
     }
     
     func replay() {
-        seek(to: 0.0)
-        play()
+        player?.replay()
+        
+        playerView.isHidden = false
+        replayPanel?.isHidden = true
     }
     
     func seek(to time: TimeInterval) {
-        player?.seek(to: CMTimeMakeWithSeconds(time, preferredTimescale: Int32(NSEC_PER_SEC)))
+        player?.seek(to: time)
+
         playerView.isHidden = false
         replayPanel?.isHidden = true
     }
     
     func toggleMute() {
-        guard let player = player else { return }
-        player.isMuted = !player.isMuted
+        player?.toggleMute()
     }
     
     func fullscreen(enabled: Bool, rotateTo orientation: UIInterfaceOrientation? = nil) {
@@ -257,14 +250,10 @@ private extension TrailerPlayerView {
     func setupPlayer(_ item: TrailerPlayerItem) {
         guard let url = item.videoUrl else { return }
         
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
-        
         let playerItem = AVPlayerItem(url: url)
-        player = TrailerPlayer(playerItem: playerItem)
         
-        if let asset = playerItem.asset as? AVURLAsset, item.isDRMContent {
-            asset.resourceLoader.setDelegate(self, queue: fairplayQueue)
-        }
+        player = TrailerPlayer(playerItem: playerItem, isDRMContent: item.isDRMContent)
+        player?.handler = self
         
         previousTimeControlStatus = player?.timeControlStatus
         
@@ -436,63 +425,6 @@ private extension TrailerPlayerView {
     @objc func onTapGestureTapped() {
         guard controlPanel != nil else { return }
         controlPanelAnimation(isShow: !isControlPanelShowing)
-    }
-}
-
-extension TrailerPlayerView: AVAssetResourceLoaderDelegate {
-    
-    public func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-        guard
-            let url = loadingRequest.request.url,
-            let scheme = url.scheme,
-            scheme == "skd"
-        else {
-            loadingRequest.finishLoading(with: TrailerPlayerDRMError.noRequestUrl)
-            return false
-        }
-        
-        guard
-            let certificateUrl = DRMDelegate?.certUrl(for: self),
-            let certificateData = try? Data(contentsOf: certificateUrl)
-        else {
-            loadingRequest.finishLoading(with: TrailerPlayerDRMError.noCertificateData)
-            return false
-        }
-        
-        let contentId = DRMDelegate?.contentId(for: self) ?? url.host
-        guard
-            let contentIdData = contentId?.data(using: .utf8),
-            let SPCData = try? loadingRequest.streamingContentKeyRequestData(forApp: certificateData, contentIdentifier: contentIdData, options: nil)
-        else {
-            loadingRequest.finishLoading(with: TrailerPlayerDRMError.noSPCData)
-            return false
-        }
-        
-        guard let ckcUrl = DRMDelegate?.ckcUrl(for: self) else {
-            loadingRequest.finishLoading(with: TrailerPlayerDRMError.noCKCUrl)
-            return false
-        }
-        
-        var ckcRequest = URLRequest(url: ckcUrl)
-        ckcRequest.httpMethod = "POST"
-        ckcRequest.httpBody = SPCData
-        if let fields = DRMDelegate?.ckcRequestHeaderFields(for: self) {
-            fields.forEach { headerField, value in
-                ckcRequest.addValue(value, forHTTPHeaderField: headerField)
-            }
-        }
-        
-        URLSession.shared.dataTask(with: ckcRequest) { data, response, error in
-            guard let ckcData = data else {
-                loadingRequest.finishLoading(with: TrailerPlayerDRMError.noCKCData)
-                return
-            }
-            loadingRequest.dataRequest?.respond(with: ckcData)
-            loadingRequest.finishLoading()
-        }
-        .resume()
-        
-        return true
     }
 }
 
