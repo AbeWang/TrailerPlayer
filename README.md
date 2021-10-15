@@ -6,6 +6,9 @@ https://user-images.githubusercontent.com/1064039/136514197-452bfecd-fe68-465d-9
 
 Icons by Icons8 (https://icons8.com)
 
+## v1.3.1
+- Code refactoring
+
 ## v1.3.0
 - Support DRM (FairPlay)
 
@@ -61,18 +64,16 @@ required public init(url: URL? = nil,            // 預告片 url
                      mute: Bool = true,          // 預設播放為靜音
                      isDRMContent: Bool = false) // 是否為 DRM 內容
 ```
-#### TrailerPlayerViewPlaybackDelegate
+#### TrailerPlayerPlaybackDelegate
 ```swift
-// 如果 autoReplay 為 false 時，播放完畢會觸發
-func trailerPlayerViewDidEndPlaying(_ view: TrailerPlayerView)
 // 當 player 播放時，可透過此 callback 更新播放時間
-func trailerPlayerView(_ view: TrailerPlayerView, didUpdatePlaybackTime time: TimeInterval)
+func trailerPlayer(_ player: TrailerPlayer, didUpdatePlaybackTime time: TimeInterval)
 // 當 player 狀態改變時，可透過此 callback 更新控制面板上的播放狀態
-func trailerPlayerView(_ view: TrailerPlayerView, didChangePlaybackStatus status: TrailerPlayerPlaybackStatus)
+func trailerPlayer(_ player: TrailerPlayer, didChangePlaybackStatus status: TrailerPlayerPlaybackStatus)
 // 當 player item 狀態變為 readyToPlay 時觸發
-func trailerPlayerViewReadyToPlay(_ view: TrailerPlayerView)
+func trailerPlayerPlaybackReady(_ player: TrailerPlayer)
 // 當 player 播放發生錯誤時觸發
-func trailerPlayerView(_ view: TrailerPlayerView, playbackDidFailed error: TrailerPlayerPlaybackError)
+func trailerPlayer(_ player: TrailerPlayer, playbackDidFailed error: TrailerPlayerPlaybackError)
 ```
 #### [Optional] PiP 支援
 ```swift
@@ -98,26 +99,26 @@ playerView.DRMDelegate = self
 playerView.set(item: item)
 
 // DRM Delegate
-extension ViewController: TrailerPlayerViewDRMDelegate {
+extension ViewController: TrailerPlayerDRMDelegate {
     
-    func certUrl(for playerView: TrailerPlayerView) -> URL {
+    func certUrl(for player: TrailerPlayer) -> URL {
         return URL(string: ...) // your certificate url
     }
     
-    func ckcUrl(for playerView: TrailerPlayerView) -> URL {
+    func ckcUrl(for player: TrailerPlayer) -> URL {
         return URL(string: ...) // your ckc url
     }
 }
 ```
-#### TrailerPlayerViewDRMDelegate
+#### TrailerPlayerDRMDelegate
 ```swift
 // CKC(Content Key Context) URL
-func ckcUrl(for playerView: TrailerPlayerView) -> URL
+func ckcUrl(for player: TrailerPlayer) -> URL
 // Certificate URL
-func certUrl(for playerView: TrailerPlayerView) -> URL
+func certUrl(for player: TrailerPlayer) -> URL
 // Optional: content Id for SPC(Server Playback Context) message
-func contentId(for playerView: TrailerPlayerView) -> String?
+func contentId(for player: TrailerPlayer) -> String?
 // Optional: HTTP header fields for CKC request
-func ckcRequestHeaderFields(for playerView: TrailerPlayerView) -> [(headerField: String, value: String)]?
+func ckcRequestHeaderFields(for player: TrailerPlayer) -> [(headerField: String, value: String)]?
 ```
 #### 操作細節可參考 Sample code
