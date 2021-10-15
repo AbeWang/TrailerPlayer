@@ -5,8 +5,6 @@
 //  Created by Abe Wang on 2021/10/1.
 //
 
-import AVFoundation
-import UIKit
 import AVKit
 
 public class TrailerPlayerView: UIView {
@@ -14,25 +12,17 @@ public class TrailerPlayerView: UIView {
     public weak var playbackDelegate: TrailerPlayerPlaybackDelegate?
     public weak var DRMDelegate: TrailerPlayerDRMDelegate?
     
-    public var isMuted: Bool {
-        player?.isMuted ?? true
-    }
+    public var isMuted: Bool { player?.isMuted ?? true }
     
-    public var canUseFullscreen: Bool {
-        player != nil
-    }
+    public var canUseFullscreen: Bool { player != nil }
+    
+    public var duration: TimeInterval { player?.duration ?? 0.0 }
+    
+    public var status: TrailerPlayerPlaybackStatus { player?.playbackStatus ?? .unknown }
     
     public var enablePictureInPicture: Bool {
         get { pipEnabled }
         set { setPictureInPicture(enabled: newValue) }
-    }
-    
-    public var duration: TimeInterval {
-        player?.duration ?? 0.0
-    }
-    
-    public var status: TrailerPlayerPlaybackStatus {
-        player?.playbackStatus ?? .unknown
     }
     
     @AutoLayout
@@ -68,9 +58,10 @@ public class TrailerPlayerView: UIView {
     
     private var player: TrailerPlayer?
     private var playerLayer: AVPlayerLayer?
-    private var pictureInPictureController: AVPictureInPictureController?
     private var currentPlayingItem: TrailerPlayerItem?
     private var shouldResumePlay = false
+    
+    private var pipController: AVPictureInPictureController?
     private var pipEnabled = false
     
     private weak var controlPanel: UIView?
@@ -100,7 +91,7 @@ public class TrailerPlayerView: UIView {
     
     public override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
-        playerLayer?.frame = CGRect(x: 0.0, y: 0.0, width: containerView.frame.width, height: containerView.frame.height)
+        playerLayer?.frame = containerView.frame
     }
 }
 
@@ -121,30 +112,22 @@ public extension TrailerPlayerView {
         }
     }
     
-    func play() {
-        player?.play()
-    }
+    func toggleMute() { player?.toggleMute() }
     
-    func pause() {
-        player?.pause()
-    }
+    func play() { player?.play() }
+    
+    func pause() { player?.pause() }
     
     func replay() {
         player?.replay()
-        
         playerView.isHidden = false
         replayPanel?.isHidden = true
     }
     
     func seek(to time: TimeInterval) {
         player?.seek(to: time)
-
         playerView.isHidden = false
         replayPanel?.isHidden = true
-    }
-    
-    func toggleMute() {
-        player?.toggleMute()
     }
     
     func fullscreen(enabled: Bool, rotateTo orientation: UIInterfaceOrientation? = nil) {
@@ -206,9 +189,7 @@ public extension TrailerPlayerView {
         DispatchQueue.main.asyncAfter(deadline: .now() + controlPanelAutoFadeOutDuration, execute: controlPanelAutoFadeOutWorkItem!)
     }
     
-    func cancelAutoFadeOutAnimation() {
-        controlPanelAutoFadeOutWorkItem?.cancel()
-    }
+    func cancelAutoFadeOutAnimation() { controlPanelAutoFadeOutWorkItem?.cancel() }
 }
 
 private extension TrailerPlayerView {
@@ -248,18 +229,17 @@ private extension TrailerPlayerView {
         
         let playerItem = AVPlayerItem(url: url)
         
-        player = TrailerPlayer(playerItem: playerItem, isDRMContent: item.isDRMContent)
-        player?.handler = self
-        
         NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playerDidEndPlaying), name: .AVPlayerItemDidPlayToEndTime, object: playerItem)
         
-        player?.isReadyToPlayCallback = { [weak self] in
+        player = TrailerPlayer(playerItem: playerItem, isDRMContent: item.isDRMContent)
+        player?.handler = self
+        player?.isMuted = item.mute
+        player?.playbackReadyCallback = { [weak self] in
             guard let self = self else { return }
             self.playerView.isHidden = false
         }
-        
         player?.isBufferingCallback = { [weak self] buffering in
             guard let self = self else { return }
             if buffering {
@@ -274,20 +254,16 @@ private extension TrailerPlayerView {
         
         setPictureInPicture(enabled: pipEnabled)
         
-        player?.isMuted = item.mute
-        if item.autoPlay {
-            player?.play()
-        }
+        if item.autoPlay { play() }
     }
     
     func reset() {
         NotificationCenter.default.removeObserver(self)
         
         currentPlayingItem = nil
+        pipController = nil
         
         thumbnailView.image = nil
-        
-        pictureInPictureController = nil
         
         player?.pause()
         player?.replaceCurrentItem(with: nil)
@@ -299,10 +275,8 @@ private extension TrailerPlayerView {
     
     func layout(view: UIView, into: UIView, animated: Bool = true) {
         guard view.superview == nil else { return }
-        
         view.translatesAutoresizingMaskIntoConstraints = false
         view.alpha = 0
-        
         into.addSubview(view)
         
         let duration = animated ? 0.25: 0.0
@@ -322,10 +296,10 @@ private extension TrailerPlayerView {
         pipEnabled = enabled
         
         if !enabled {
-            pictureInPictureController = nil
-        } else if let layer = playerLayer, pictureInPictureController == nil {
-            pictureInPictureController = AVPictureInPictureController(playerLayer: layer)
-            pictureInPictureController?.delegate = self
+            pipController = nil
+        } else if let layer = playerLayer, pipController == nil {
+            pipController = AVPictureInPictureController(playerLayer: layer)
+            pipController?.delegate = self
         }
     }
     
@@ -354,8 +328,7 @@ private extension TrailerPlayerView {
             replayPanel?.isHidden = false
             
             if pipEnabled {
-                // Reset PIP
-                pictureInPictureController = nil
+                pipController = nil
                 setPictureInPicture(enabled: true)
             }
         }

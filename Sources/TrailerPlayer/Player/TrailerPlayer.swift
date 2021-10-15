@@ -5,24 +5,24 @@
 //  Created by Abe Wang on 2021/10/13.
 //
 
-import Foundation
 import AVFoundation
 
 public class TrailerPlayer: AVPlayer {
  
     private let fairplayQueue = DispatchQueue(label: "trailerPlayer.fairplay.queue")
     
-    private var previousTimeControlStatus: TimeControlStatus = .paused
     private var periodicTimeObserver: Any?
     private var statusObserver: NSKeyValueObservation?
     private var timeControlStatusObserver: NSKeyValueObservation?
+    
+    private var previousTimeControlStatus: TimeControlStatus = .paused
     
     public weak var handler: TrailerPlayerView?
     
     public private(set) var isDRMContent = false
     
-    public var isReadyToPlayCallback: (() -> Void)?
-    public var isBufferingCallback: ((Bool) -> Void)?
+    var playbackReadyCallback: (() -> Void)?
+    var isBufferingCallback: ((Bool) -> Void)?
     
     public var duration: TimeInterval {
         guard let time = currentItem?.duration else { return 0.0 }
@@ -62,12 +62,10 @@ public extension TrailerPlayer {
     }
     
     func seek(to time: TimeInterval) {
-        seek(to: CMTimeMakeWithSeconds(time, preferredTimescale: Int32(NSEC_PER_SEC)))
+        seek(to: CMTime(seconds: time, preferredTimescale: CMTimeScale(NSEC_PER_SEC)))
     }
     
-    func toggleMute() {
-        isMuted = !isMuted
-    }
+    func toggleMute() { isMuted = !isMuted }
 }
 
 private extension TrailerPlayer {
@@ -88,8 +86,8 @@ private extension TrailerPlayer {
             guard let self = self, let item = self.currentItem else { return }
             switch item.status {
             case .readyToPlay:
-                self.handler?.playbackDelegate?.trailerPlayerReadyToPlay(self)
-                self.isReadyToPlayCallback?()
+                self.handler?.playbackDelegate?.trailerPlayerPlaybackReady(self)
+                self.playbackReadyCallback?()
             case .failed:
                 self.handler?.playbackDelegate?.trailerPlayer(self, playbackDidFailed: .loadFailed)
             default:
