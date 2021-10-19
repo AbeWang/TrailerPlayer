@@ -6,6 +6,9 @@ https://user-images.githubusercontent.com/1064039/136514197-452bfecd-fe68-465d-9
 
 Icons by Icons8 (https://icons8.com)
 
+## v1.3.2
+- Update access control
+
 ## v1.3.1
 - Code refactoring
 
