@@ -33,7 +33,7 @@ public class TrailerPlayerView: UIView {
     }()
     
     @AutoLayout
-    private var thumbnailView: UIImageView = {
+    public private(set) var thumbnailView: UIImageView = {
         let view = UIImageView()
         view.clipsToBounds = true
         view.backgroundColor = .black
@@ -42,7 +42,7 @@ public class TrailerPlayerView: UIView {
     }()
     
     @AutoLayout
-    private var playerView: UIView = {
+    public private(set) var playerView: UIView = {
         let view = UIView()
         view.backgroundColor = .black
         view.isHidden = true
