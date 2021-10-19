@@ -6,28 +6,32 @@ https://user-images.githubusercontent.com/1064039/136514197-452bfecd-fe68-465d-9
 
 Icons by Icons8 (https://icons8.com)
 
-## v1.3.2
+## Releases
+#### v1.3.3
+- Fix an incorrect layout issue
+
+#### v1.3.2
 - Update access control
 
-## v1.3.1
+#### v1.3.1
 - Code refactoring
 
-## v1.3.0
+#### v1.3.0
 - Support DRM (FairPlay)
 
-## v1.2.1
+#### v1.2.1
 - Code refactoring
 
-## v1.2.0
+#### v1.2.0
 - Support control panel
 - Support replay panel
 - Fixed some known bugs
 
-## v1.1.0
+#### v1.1.0
 - Support PIP
 - Fixed some known bugs
 
-## v1.0.0
+#### v1.0.0
 - [x] 沒有 trailer 的 content，單純顯示 thumbnail。
 - [x] 有 trailer 的 content，可以自動播放 trailer，且在播放途中可以隨時暫停播放。
 - [x] Preview 功能不會有倍速播放，但是 progress bar 必須要有，且用戶可以自由調整 progress bar 觀看在不同秒數的內容。
