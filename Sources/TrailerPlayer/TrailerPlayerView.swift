@@ -250,6 +250,7 @@ private extension TrailerPlayerView {
         }
         
         playerLayer = AVPlayerLayer(player: player)
+        playerLayer?.frame = containerView.frame
         playerView.layer.addSublayer(playerLayer!)
         
         setPictureInPicture(enabled: pipEnabled)
