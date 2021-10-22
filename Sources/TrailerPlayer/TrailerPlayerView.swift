@@ -98,18 +98,12 @@ public class TrailerPlayerView: UIView {
 public extension TrailerPlayerView {
     
     func set(item: TrailerPlayerItem) {
-        loadingIndicator.startAnimating()
-        
         reset()
         
         currentPlayingItem = item
         
-        if let url = item.thumbnailUrl {
-            fetchThumbnailImage(url)
-        }
-        if item.videoUrl != nil {
-            setupPlayer(item)
-        }
+        setupThumbnail()
+        setupPlayer()
     }
     
     func toggleMute() { player?.toggleMute() }
@@ -211,11 +205,6 @@ private extension TrailerPlayerView {
             guard let self = self else { return }
             DispatchQueue.main.async {
                 guard let data = data, error == nil else { return }
-                
-                if self.currentPlayingItem?.videoUrl == nil {
-                    self.loadingIndicator.stopAnimating()
-                }
-                
                 UIView.transition(with: self.thumbnailView, duration: 0.25, options: .transitionCrossDissolve) {
                     self.thumbnailView.image = UIImage(data: data)
                 } completion: {_ in }
@@ -224,8 +213,21 @@ private extension TrailerPlayerView {
         .resume()
     }
     
-    func setupPlayer(_ item: TrailerPlayerItem) {
-        guard let url = item.videoUrl else { return }
+    func setupThumbnail() {
+        guard let item = currentPlayingItem else { return }
+        
+        if let image = item.thumbnailImage {
+            thumbnailView.image = image
+        }
+        if let url = item.thumbnailUrl {
+            fetchThumbnailImage(url)
+        }
+    }
+    
+    func setupPlayer() {
+        guard let item = currentPlayingItem, let url = item.videoUrl else { return }
+        
+        loadingIndicator.startAnimating()
         
         let playerItem = AVPlayerItem(url: url)
         

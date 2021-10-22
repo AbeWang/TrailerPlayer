@@ -7,6 +7,9 @@ https://user-images.githubusercontent.com/1064039/136514197-452bfecd-fe68-465d-9
 Icons by Icons8 (https://icons8.com)
 
 ## Releases
+#### v1.3.4
+- Fixed some known bugs
+
 #### v1.3.3
 - Fix an incorrect layout issue
 
@@ -64,12 +67,13 @@ playerView.set(item: item)
 ```
 #### TrailerPlayerItem 細節設定
 ```swift
-required public init(url: URL? = nil,            // 預告片 url
-                     thumbnailUrl: URL? = nil,   // 縮圖 url
-                     autoPlay: Bool = true,      // 自動播放，否則自行呼叫 play()
-                     autoReplay: Bool = false,   // 播放完畢後，是否自動重新播放
-                     mute: Bool = true,          // 預設播放為靜音
-                     isDRMContent: Bool = false) // 是否為 DRM 內容
+required public init(url: URL? = nil,                // trailer url
+                     thumbnailUrl: URL? = nil,       // thumbnail url
+                     thumbnailImage: UIImage? = nil, // 若已有 thumbnail 圖片時，可直接提供 
+                     autoPlay: Bool = true,          // 自動播放，否則自行呼叫 play()
+                     autoReplay: Bool = false,       // 播放完畢後，是否自動重新播放
+                     mute: Bool = true,              // 預設播放為靜音
+                     isDRMContent: Bool = false)     // 是否為 DRM 內容
 ```
 #### TrailerPlayerPlaybackDelegate
 ```swift
