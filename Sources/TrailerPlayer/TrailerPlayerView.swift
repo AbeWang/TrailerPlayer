@@ -217,7 +217,9 @@ private extension TrailerPlayerView {
         guard let item = currentPlayingItem else { return }
         
         if let image = item.thumbnailImage {
-            thumbnailView.image = image
+            UIView.transition(with: thumbnailView, duration: 0.25, options: .transitionCrossDissolve) {
+                self.thumbnailView.image = image
+            } completion: {_ in }
         }
         if let url = item.thumbnailUrl {
             fetchThumbnailImage(url)
