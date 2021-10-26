@@ -60,6 +60,7 @@ public class TrailerPlayerView: UIView {
     private var playerLayer: AVPlayerLayer?
     private var currentPlayingItem: TrailerPlayerItem?
     private var shouldResumePlay = false
+    private var trailerFinished = false
     
     private var pipController: AVPictureInPictureController?
     private var pipEnabled = false
@@ -113,15 +114,19 @@ public extension TrailerPlayerView {
     func pause() { player?.pause() }
     
     func replay() {
-        player?.replay()
+        trailerFinished = false
         playerView.isHidden = false
         replayPanel?.isHidden = true
+        
+        player?.replay()
     }
     
     func seek(to time: TimeInterval) {
-        player?.seek(to: time)
+        trailerFinished = false
         playerView.isHidden = false
         replayPanel?.isHidden = true
+        
+        player?.seek(to: time)
     }
     
     func fullscreen(enabled: Bool, rotateTo orientation: UIInterfaceOrientation? = nil) {
@@ -241,7 +246,7 @@ private extension TrailerPlayerView {
         player?.handler = self
         player?.isMuted = item.mute
         player?.playbackReadyCallback = { [weak self] in
-            guard let self = self else { return }
+            guard let self = self, !self.trailerFinished else { return }
             self.playerView.isHidden = false
         }
         player?.isBufferingCallback = { [weak self] buffering in
@@ -265,6 +270,7 @@ private extension TrailerPlayerView {
     func reset() {
         NotificationCenter.default.removeObserver(self)
         
+        trailerFinished = false
         currentPlayingItem = nil
         pipController = nil
         
@@ -329,6 +335,7 @@ private extension TrailerPlayerView {
         if item.autoReplay {
             replay()
         } else {
+            trailerFinished = true
             playerView.isHidden = true
             replayPanel?.isHidden = false
             
