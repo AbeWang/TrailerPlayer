@@ -43,14 +43,12 @@ public class TrailerPlayer: AVPlayer {
     }
     
     public required init(playerItem item: AVPlayerItem, isDRMContent drmContent: Bool = false) {
-        super.init(playerItem: item)
-        
-        isDRMContent = drmContent
-        setup()
-    }
-    
-    override public init() {
         super.init()
+        
+        replaceCurrentItem(with: item)
+        isDRMContent = drmContent
+        
+        setup()
     }
 }
 
