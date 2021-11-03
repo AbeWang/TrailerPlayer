@@ -7,8 +7,9 @@ https://user-images.githubusercontent.com/1064039/136514197-452bfecd-fe68-465d-9
 Icons by Icons8 (https://icons8.com)
 
 ## Releases
-#### v1.3.6
+#### v1.3.7
 - Fixed some known bugs
+- Fixed memory leak
 
 #### v1.3.3
 - Fix an incorrect layout issue
