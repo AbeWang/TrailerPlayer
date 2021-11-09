@@ -7,7 +7,7 @@ https://user-images.githubusercontent.com/1064039/136514197-452bfecd-fe68-465d-9
 Icons by Icons8 (https://icons8.com)
 
 ## Releases
-#### v1.4.0
+#### v1.4.1
 - Provide debug information
 
 #### v1.3.7
