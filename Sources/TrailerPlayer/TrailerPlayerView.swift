@@ -69,7 +69,7 @@ public class TrailerPlayerView: UIView {
         label.numberOfLines = 0
         label.font = .systemFont(ofSize: 14.0)
         label.textColor = .white
-        label.backgroundColor = .black.withAlphaComponent(0.5)
+        label.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         return label
     }()
     
