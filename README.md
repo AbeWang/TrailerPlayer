@@ -7,6 +7,9 @@ https://user-images.githubusercontent.com/1064039/136514197-452bfecd-fe68-465d-9
 Icons by Icons8 (https://icons8.com)
 
 ## Releases
+#### v1.4.0
+- Provide debug information
+
 #### v1.3.7
 - Fixed some known bugs
 - Fixed memory leak
@@ -91,13 +94,19 @@ func trailerPlayer(_ player: TrailerPlayer, playbackDidFailed error: TrailerPlay
 ```swift
 playerView.enablePictureInPicture = true
 ```
-#### [Optional] 設置面板
+#### [Optional] 面板設置
 ```swift
 let controlPanel: UIView = ... // your custom control panel
 playerView.addControlPanel(controlPanel)
 
 let replayPanel: UIView = ... // your custom replay panel
 playerView.addReplayPanel(replayPanel)
+```
+#### [Optional] Debug Info 顯示
+![IMG_0007](https://user-images.githubusercontent.com/1064039/140898455-3b3cedd5-2945-49f6-a5f6-2b3ca6a4922a.jpg)
+```swift
+let playerView = TrailerPlayerView()
+playerView.enableDebugView = true
 ```
 #### [Optional] DRM 支援
 ```swift
