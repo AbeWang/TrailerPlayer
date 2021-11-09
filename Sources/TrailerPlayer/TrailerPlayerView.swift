@@ -25,6 +25,11 @@ public class TrailerPlayerView: UIView {
         set { setPictureInPicture(enabled: newValue) }
     }
     
+    public var enableDebugView: Bool {
+        get { debugViewEnabled }
+        set { setDebugView(enabled: newValue) }
+    }
+    
     @AutoLayout
     public private(set) var containerView: UIView = {
         let view = UIView()
@@ -56,11 +61,24 @@ public class TrailerPlayerView: UIView {
         return view
     }()
     
+    @AutoLayout
+    private var debugInfoLabel: UILabel = {
+        let label = UILabel()
+        label.isHidden = true
+        label.textAlignment = .left
+        label.numberOfLines = 0
+        label.font = .systemFont(ofSize: 14.0)
+        label.textColor = .white
+        label.backgroundColor = .black.withAlphaComponent(0.5)
+        return label
+    }()
+    
     private var player: TrailerPlayer?
     private var playerLayer: AVPlayerLayer?
     private var currentPlayingItem: TrailerPlayerItem?
     private var shouldResumePlay = false
     private var trailerFinished = false
+    private var debugViewEnabled = false
     
     private var pipController: AVPictureInPictureController?
     private var pipEnabled = false
@@ -114,18 +132,12 @@ public extension TrailerPlayerView {
     func pause() { player?.pause() }
     
     func replay() {
-        trailerFinished = false
-        playerView.isHidden = false
-        replayPanel?.isHidden = true
-        
+        switchToPlayerView()
         player?.replay()
     }
     
     func seek(to time: TimeInterval) {
-        trailerFinished = false
-        playerView.isHidden = false
-        replayPanel?.isHidden = true
-        
+        switchToPlayerView()
         player?.seek(to: time)
     }
     
@@ -203,6 +215,17 @@ private extension TrailerPlayerView {
         containerView.addSubview(loadingIndicator)
         loadingIndicator.centerXAnchor.constraint(equalTo: self.containerView.centerXAnchor).isActive = true
         loadingIndicator.centerYAnchor.constraint(equalTo: self.containerView.centerYAnchor).isActive = true
+        
+        containerView.addSubview(debugInfoLabel)
+        if #available(iOS 11.0, *) {
+            debugInfoLabel.leftAnchor.constraint(equalTo: self.containerView.safeAreaLayoutGuide.leftAnchor).isActive = true
+            debugInfoLabel.rightAnchor.constraint(equalTo: self.containerView.safeAreaLayoutGuide.rightAnchor).isActive = true
+            debugInfoLabel.topAnchor.constraint(equalTo: self.containerView.safeAreaLayoutGuide.topAnchor).isActive = true
+        } else {
+            debugInfoLabel.leftAnchor.constraint(equalTo: self.containerView.leftAnchor).isActive = true
+            debugInfoLabel.rightAnchor.constraint(equalTo: self.containerView.rightAnchor).isActive = true
+            debugInfoLabel.topAnchor.constraint(equalTo: self.containerView.topAnchor).isActive = true
+        }
     }
     
     func fetchThumbnailImage(_ url: URL) {
@@ -257,12 +280,28 @@ private extension TrailerPlayerView {
                 self.loadingIndicator.stopAnimating()
             }
         }
+        player?.debugInfoCallback = { [weak self] debugInfo in
+            guard let self = self else { return }
+            if let bitrate = debugInfo.bitrate {
+                self.debugInfoLabel.text = "\((Int)(bitrate / 1000)) Kbps\n"
+            }
+            if let resolution = debugInfo.resolution {
+                self.debugInfoLabel.text?.append("\((Int)(resolution.width)) x \((Int)(resolution.height))\n")
+            }
+            if let frameRate = debugInfo.frameRate {
+                self.debugInfoLabel.text?.append("\((Int)(frameRate)) fps\n")
+            }
+            if let url = debugInfo.trailerUrl {
+                self.debugInfoLabel.text?.append(url.absoluteString)
+            }
+        }
         
         playerLayer = AVPlayerLayer(player: player)
         playerLayer?.frame = containerView.frame
         playerView.layer.addSublayer(playerLayer!)
         
         setPictureInPicture(enabled: pipEnabled)
+        setDebugView(enabled: debugViewEnabled)
         
         if item.autoPlay { play() }
     }
@@ -301,6 +340,13 @@ private extension TrailerPlayerView {
         } completion: { _ in }
     }
     
+    func switchToPlayerView() {
+        trailerFinished = false
+        playerView.isHidden = false
+        replayPanel?.isHidden = true
+        setDebugView(enabled: debugViewEnabled)
+    }
+    
     func setPictureInPicture(enabled: Bool) {
         guard AVPictureInPictureController.isPictureInPictureSupported() else { return }
         
@@ -311,6 +357,15 @@ private extension TrailerPlayerView {
         } else if let layer = playerLayer, pipController == nil {
             pipController = AVPictureInPictureController(playerLayer: layer)
             pipController?.delegate = self
+        }
+    }
+    
+    func setDebugView(enabled: Bool) {
+        debugViewEnabled = enabled
+        debugInfoLabel.isHidden = !enabled
+        
+        if let player = player {
+            player.debugEnabled = enabled
         }
     }
     
@@ -338,6 +393,7 @@ private extension TrailerPlayerView {
             trailerFinished = true
             playerView.isHidden = true
             replayPanel?.isHidden = false
+            debugInfoLabel.isHidden = true
             
             if pipEnabled {
                 pipController = nil

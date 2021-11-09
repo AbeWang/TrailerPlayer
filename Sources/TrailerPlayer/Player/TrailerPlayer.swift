@@ -11,7 +11,10 @@ public class TrailerPlayer: AVPlayer {
  
     private let fairplayQueue = DispatchQueue(label: "trailerPlayer.fairplay.queue")
     
+    private var debugInfo = TrailerPlayerDebugInfo()
+    
     private var periodicTimeObserver: Any?
+    private var periodicTimeObserverForDebug: Any?
     private var statusObserver: NSKeyValueObservation?
     private var timeControlStatusObserver: NSKeyValueObservation?
     
@@ -21,8 +24,11 @@ public class TrailerPlayer: AVPlayer {
     
     public private(set) var isDRMContent = false
     
+    var debugEnabled = false
+    
     var playbackReadyCallback: (() -> Void)?
     var isBufferingCallback: ((Bool) -> Void)?
+    var debugInfoCallback: ((TrailerPlayerDebugInfo) -> Void)?
     
     public var duration: TimeInterval {
         guard let time = currentItem?.duration else { return 0.0 }
@@ -80,6 +86,20 @@ private extension TrailerPlayer {
             self.handler?.playbackDelegate?.trailerPlayer(self, didUpdatePlaybackTime: CMTimeGetSeconds(self.currentTime()))
         }
         
+        periodicTimeObserverForDebug = addPeriodicTimeObserver(forInterval:CMTime(seconds: 1.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC)), queue: DispatchQueue.main) { [weak self] _ in
+            guard
+                let self = self, self.debugEnabled,
+                let callback = self.debugInfoCallback,
+                let item = self.currentItem
+            else { return }
+            
+            self.debugInfo.trailerUrl = (item.asset as? AVURLAsset)?.url
+            self.debugInfo.bitrate = item.accessLog()?.events.last?.indicatedBitrate
+            self.debugInfo.frameRate = item.tracks.first?.currentVideoFrameRate
+            self.debugInfo.resolution = item.tracks.first?.assetTrack?.naturalSize
+            callback(self.debugInfo)
+        }
+        
         statusObserver = currentItem?.observe(\.status, options: [.new]) { [weak self] _, _ in
             guard let self = self, let item = self.currentItem else { return }
             switch item.status {
@@ -121,11 +141,20 @@ private extension TrailerPlayer {
             periodicTimeObserver = nil
         }
         
+        if let observer = periodicTimeObserverForDebug {
+            removeTimeObserver(observer)
+            periodicTimeObserverForDebug = nil
+        }
+        
         statusObserver?.invalidate()
         statusObserver = nil
         
         timeControlStatusObserver?.invalidate()
         timeControlStatusObserver = nil
+        
+        playbackReadyCallback = nil
+        isBufferingCallback = nil
+        debugInfoCallback = nil
     }
 }
 

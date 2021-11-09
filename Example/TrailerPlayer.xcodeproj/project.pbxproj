@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A028BE27273A24B200823938 /* TrailerPlayerDebugInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A028BE26273A24B200823938 /* TrailerPlayerDebugInfo.swift */; };
 		A0646AB7271031D900115627 /* ControlPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0646AB6271031D900115627 /* ControlPanel.swift */; };
 		A0646AB92710480500115627 /* ReplayPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0646AB82710480500115627 /* ReplayPanel.swift */; };
 		A087314B27157D3C0016081C /* TrailerPlayerPlaybackDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A087314A27157D3C0016081C /* TrailerPlayerPlaybackDelegate.swift */; };
@@ -25,6 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A028BE26273A24B200823938 /* TrailerPlayerDebugInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailerPlayerDebugInfo.swift; sourceTree = "<group>"; };
 		A0646AB6271031D900115627 /* ControlPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlPanel.swift; sourceTree = "<group>"; };
 		A0646AB82710480500115627 /* ReplayPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayPanel.swift; sourceTree = "<group>"; };
 		A087314A27157D3C0016081C /* TrailerPlayerPlaybackDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailerPlayerPlaybackDelegate.swift; sourceTree = "<group>"; };
@@ -87,6 +89,7 @@
 			children = (
 				A08731502716956B0016081C /* TrailerPlayer.swift */,
 				A0AA9777270C3773004DC5EF /* TrailerPlayerItem.swift */,
+				A028BE26273A24B200823938 /* TrailerPlayerDebugInfo.swift */,
 			);
 			path = Player;
 			sourceTree = "<group>";
@@ -219,6 +222,7 @@
 				A0AA9779270C3773004DC5EF /* TrailerPlayerView.swift in Sources */,
 				A087314F2715800D0016081C /* TrailerPlayerPlaybackError.swift in Sources */,
 				A0C84FE72702C744007349EC /* ViewController.swift in Sources */,
+				A028BE27273A24B200823938 /* TrailerPlayerDebugInfo.swift in Sources */,
 				A087315327169B340016081C /* TrailerPlayerDRMDelegate.swift in Sources */,
 				A087314D27157F240016081C /* TrailerPlayerPlaybackStatus.swift in Sources */,
 				A0AA977A270C3773004DC5EF /* TrailerPlayerItem.swift in Sources */,
