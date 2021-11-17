@@ -8,6 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		A028BE27273A24B200823938 /* TrailerPlayerDebugInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A028BE26273A24B200823938 /* TrailerPlayerDebugInfo.swift */; };
+		A05D2ECD274583CB00EFBBDE /* TrailerPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = A05D2ECC274583CB00EFBBDE /* TrailerPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A05D2ED0274583CB00EFBBDE /* TrailerPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A05D2ECA274583CB00EFBBDE /* TrailerPlayer.framework */; };
+		A05D2ED1274583CB00EFBBDE /* TrailerPlayer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A05D2ECA274583CB00EFBBDE /* TrailerPlayer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A05D2ED6274584E500EFBBDE /* AutoLayoutWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AA9775270C3773004DC5EF /* AutoLayoutWrapper.swift */; };
+		A05D2ED7274584EA00EFBBDE /* TrailerPlayerPlaybackStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = A087314C27157F240016081C /* TrailerPlayerPlaybackStatus.swift */; };
+		A05D2ED8274584EC00EFBBDE /* TrailerPlayerPlaybackError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A087314E2715800D0016081C /* TrailerPlayerPlaybackError.swift */; };
+		A05D2ED9274584EF00EFBBDE /* TrailerPlayerDRMError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08731542716BA540016081C /* TrailerPlayerDRMError.swift */; };
+		A05D2EDA274584F300EFBBDE /* TrailerPlayerPlaybackDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A087314A27157D3C0016081C /* TrailerPlayerPlaybackDelegate.swift */; };
+		A05D2EDB274584F500EFBBDE /* TrailerPlayerDRMDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A087315227169B340016081C /* TrailerPlayerDRMDelegate.swift */; };
+		A05D2EDC274584F900EFBBDE /* TrailerPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AA9776270C3773004DC5EF /* TrailerPlayerView.swift */; };
+		A05D2EDD2745867500EFBBDE /* TrailerPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08731502716956B0016081C /* TrailerPlayer.swift */; };
+		A05D2EDE2745867700EFBBDE /* TrailerPlayerItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AA9777270C3773004DC5EF /* TrailerPlayerItem.swift */; };
+		A05D2EDF2745867A00EFBBDE /* TrailerPlayerDebugInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A028BE26273A24B200823938 /* TrailerPlayerDebugInfo.swift */; };
 		A0646AB7271031D900115627 /* ControlPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0646AB6271031D900115627 /* ControlPanel.swift */; };
 		A0646AB92710480500115627 /* ReplayPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0646AB82710480500115627 /* ReplayPanel.swift */; };
 		A087314B27157D3C0016081C /* TrailerPlayerPlaybackDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A087314A27157D3C0016081C /* TrailerPlayerPlaybackDelegate.swift */; };
@@ -25,8 +38,34 @@
 		A0C84FEF2702C745007349EC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0C84FED2702C745007349EC /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		A05D2ECE274583CB00EFBBDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A0C84FD72702C744007349EC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A05D2EC9274583CB00EFBBDE;
+			remoteInfo = "TrailerPlayer Framework";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A05D2ED5274583CC00EFBBDE /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A05D2ED1274583CB00EFBBDE /* TrailerPlayer.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		A028BE26273A24B200823938 /* TrailerPlayerDebugInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailerPlayerDebugInfo.swift; sourceTree = "<group>"; };
+		A05D2ECA274583CB00EFBBDE /* TrailerPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TrailerPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A05D2ECC274583CB00EFBBDE /* TrailerPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TrailerPlayer.h; sourceTree = "<group>"; };
 		A0646AB6271031D900115627 /* ControlPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlPanel.swift; sourceTree = "<group>"; };
 		A0646AB82710480500115627 /* ReplayPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayPanel.swift; sourceTree = "<group>"; };
 		A087314A27157D3C0016081C /* TrailerPlayerPlaybackDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailerPlayerPlaybackDelegate.swift; sourceTree = "<group>"; };
@@ -47,16 +86,32 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		A0C84FDC2702C744007349EC /* Frameworks */ = {
+		A05D2EC7274583CB00EFBBDE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A0C84FDC2702C744007349EC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A05D2ED0274583CB00EFBBDE /* TrailerPlayer.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A05D2ECB274583CB00EFBBDE /* TrailerPlayer Framework */ = {
+			isa = PBXGroup;
+			children = (
+				A05D2ECC274583CB00EFBBDE /* TrailerPlayer.h */,
+			);
+			path = "TrailerPlayer Framework";
+			sourceTree = "<group>";
+		};
 		A087314627157B270016081C /* Enums */ = {
 			isa = PBXGroup;
 			children = (
@@ -119,6 +174,7 @@
 			children = (
 				A0AA9773270C3773004DC5EF /* Sources */,
 				A0C84FE12702C744007349EC /* Example */,
+				A05D2ECB274583CB00EFBBDE /* TrailerPlayer Framework */,
 			);
 			sourceTree = "<group>";
 		};
@@ -126,6 +182,7 @@
 			isa = PBXGroup;
 			children = (
 				A0C84FDF2702C744007349EC /* TrailerPlayer.app */,
+				A05D2ECA274583CB00EFBBDE /* TrailerPlayer.framework */,
 			);
 			name = Products;
 			path = ..;
@@ -148,7 +205,36 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		A05D2EC5274583CB00EFBBDE /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A05D2ECD274583CB00EFBBDE /* TrailerPlayer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		A05D2EC9274583CB00EFBBDE /* TrailerPlayer Framework */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A05D2ED2274583CC00EFBBDE /* Build configuration list for PBXNativeTarget "TrailerPlayer Framework" */;
+			buildPhases = (
+				A05D2EC5274583CB00EFBBDE /* Headers */,
+				A05D2EC6274583CB00EFBBDE /* Sources */,
+				A05D2EC7274583CB00EFBBDE /* Frameworks */,
+				A05D2EC8274583CB00EFBBDE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "TrailerPlayer Framework";
+			productName = "TrailerPlayer Framework";
+			productReference = A05D2ECA274583CB00EFBBDE /* TrailerPlayer.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		A0C84FDE2702C744007349EC /* TrailerPlayer */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A0C84FF32702C745007349EC /* Build configuration list for PBXNativeTarget "TrailerPlayer" */;
@@ -156,10 +242,12 @@
 				A0C84FDB2702C744007349EC /* Sources */,
 				A0C84FDC2702C744007349EC /* Frameworks */,
 				A0C84FDD2702C744007349EC /* Resources */,
+				A05D2ED5274583CC00EFBBDE /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A05D2ECF274583CB00EFBBDE /* PBXTargetDependency */,
 			);
 			name = TrailerPlayer;
 			productName = TrailerPlayer;
@@ -175,6 +263,9 @@
 				LastSwiftUpdateCheck = 1250;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
+					A05D2EC9274583CB00EFBBDE = {
+						CreatedOnToolsVersion = 13.0;
+					};
 					A0C84FDE2702C744007349EC = {
 						CreatedOnToolsVersion = 12.5.1;
 					};
@@ -194,11 +285,19 @@
 			projectRoot = "";
 			targets = (
 				A0C84FDE2702C744007349EC /* TrailerPlayer */,
+				A05D2EC9274583CB00EFBBDE /* TrailerPlayer Framework */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A05D2EC8274583CB00EFBBDE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A0C84FDD2702C744007349EC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -211,6 +310,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A05D2EC6274583CB00EFBBDE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A05D2ED6274584E500EFBBDE /* AutoLayoutWrapper.swift in Sources */,
+				A05D2EDB274584F500EFBBDE /* TrailerPlayerDRMDelegate.swift in Sources */,
+				A05D2ED8274584EC00EFBBDE /* TrailerPlayerPlaybackError.swift in Sources */,
+				A05D2EDE2745867700EFBBDE /* TrailerPlayerItem.swift in Sources */,
+				A05D2ED7274584EA00EFBBDE /* TrailerPlayerPlaybackStatus.swift in Sources */,
+				A05D2ED9274584EF00EFBBDE /* TrailerPlayerDRMError.swift in Sources */,
+				A05D2EDF2745867A00EFBBDE /* TrailerPlayerDebugInfo.swift in Sources */,
+				A05D2EDC274584F900EFBBDE /* TrailerPlayerView.swift in Sources */,
+				A05D2EDD2745867500EFBBDE /* TrailerPlayer.swift in Sources */,
+				A05D2EDA274584F300EFBBDE /* TrailerPlayerPlaybackDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A0C84FDB2702C744007349EC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -234,6 +350,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A05D2ECF274583CB00EFBBDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A05D2EC9274583CB00EFBBDE /* TrailerPlayer Framework */;
+			targetProxy = A05D2ECE274583CB00EFBBDE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		A0C84FED2702C745007349EC /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
@@ -246,6 +370,80 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		A05D2ED3274583CC00EFBBDE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = NO;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.4.3;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = AbeWang.TrailerPlayer.framework;
+				PRODUCT_NAME = TrailerPlayer;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		A05D2ED4274583CC00EFBBDE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = NO;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.4.3;
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = AbeWang.TrailerPlayer.framework;
+				PRODUCT_NAME = TrailerPlayer;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		A0C84FF12702C745007349EC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -365,6 +563,7 @@
 		A0C84FF42702C745007349EC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Manual;
@@ -386,6 +585,7 @@
 		A0C84FF52702C745007349EC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Manual;
@@ -407,6 +607,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A05D2ED2274583CC00EFBBDE /* Build configuration list for PBXNativeTarget "TrailerPlayer Framework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A05D2ED3274583CC00EFBBDE /* Debug */,
+				A05D2ED4274583CC00EFBBDE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A0C84FDA2702C744007349EC /* Build configuration list for PBXProject "TrailerPlayer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
