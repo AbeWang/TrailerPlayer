@@ -27,6 +27,7 @@ Icons by Icons8 (https://icons8.com)
 
 ## Requirements
 - iOS 10 or above
+- Xcode 12 or above
 
 ## Installation
 ### SwiftPM
