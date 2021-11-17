@@ -43,7 +43,7 @@
 		A0C84FE62702C744007349EC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		A0C84FEB2702C745007349EC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A0C84FEE2702C745007349EC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		A0C84FF02702C745007349EC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A0C84FF02702C745007349EC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,8 +99,7 @@
 			children = (
 				A0AA9774270C3773004DC5EF /* TrailerPlayer */,
 			);
-			name = Sources;
-			path = ../Sources;
+			path = Sources;
 			sourceTree = "<group>";
 		};
 		A0AA9774270C3773004DC5EF /* TrailerPlayer */ = {
@@ -144,7 +143,7 @@
 				A0C84FF02702C745007349EC /* Info.plist */,
 				A0C84FE02702C744007349EC /* Products */,
 			);
-			name = Example;
+			path = Example;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
