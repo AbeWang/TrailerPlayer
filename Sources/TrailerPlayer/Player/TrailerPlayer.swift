@@ -94,6 +94,7 @@ private extension TrailerPlayer {
             else { return }
             
             self.debugInfo.trailerUrl = (item.asset as? AVURLAsset)?.url
+            self.debugInfo.playbackItemURI = item.accessLog()?.events.last?.uri
             self.debugInfo.bitrate = item.accessLog()?.events.last?.indicatedBitrate
             self.debugInfo.frameRate = item.tracks.first?.currentVideoFrameRate
             self.debugInfo.resolution = item.tracks.first?.assetTrack?.naturalSize

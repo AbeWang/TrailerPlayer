@@ -292,7 +292,10 @@ private extension TrailerPlayerView {
                 self.debugInfoLabel.text?.append("\((Int)(frameRate)) fps\n")
             }
             if let url = debugInfo.trailerUrl {
-                self.debugInfoLabel.text?.append(url.absoluteString)
+                self.debugInfoLabel.text?.append("[Master] \(url.absoluteString)\n")
+            }
+            if let url = debugInfo.playbackItemURI {
+                self.debugInfoLabel.text?.append("[Playback] \(url)")
             }
         }
         

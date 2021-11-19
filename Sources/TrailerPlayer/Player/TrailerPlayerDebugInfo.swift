@@ -10,6 +10,7 @@ import CoreGraphics
 
 public struct TrailerPlayerDebugInfo {
     var trailerUrl: URL?
+    var playbackItemURI: String?
     var bitrate: Double?
     var frameRate: Float?
     var resolution: CGSize?
