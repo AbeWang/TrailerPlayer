@@ -81,7 +81,7 @@ let replayPanel: UIView = ... // your custom replay panel
 playerView.addReplayPanel(replayPanel)
 ```
 #### [Optional] Debug view
-![IMG_0007](https://user-images.githubusercontent.com/1064039/140898455-3b3cedd5-2945-49f6-a5f6-2b3ca6a4922a.jpg)
+![IMG_0012](https://user-images.githubusercontent.com/1064039/142608823-8ca6df18-f804-4605-bf16-fec677696d51.jpg)
 ```swift
 let playerView = TrailerPlayerView()
 playerView.enableDebugView = true
