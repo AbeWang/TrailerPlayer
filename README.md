@@ -17,26 +17,47 @@ Icons by Icons8 (https://icons8.com)
 - [x] For the content without trailers :
 - Show thumbnail directly
 - [x] For the content with trailers :
-- In the beginning, the thumbnail will be displayed directly. After the trailer is loading completed, the trailer will be auto-played from the beginning, and at this moment, the thumbnail will be hidden. After the trailer completes playback, the thumbnail image will display (Show the replay panel if you provided).
+- In the beginning, the thumbnail will be displayed directly. After the trailer is loading completed, the trailer will be auto-played from the beginning, and at this moment, the thumbnail will be hidden. After the trailer completes playback, the thumbnail image will display (Or show the replay panel if you provided it).
 - [x] Customize layout for the control panel and replay panel
 - [x] Basic functions - Play / Pause / Seek / Replay
 - [x] Audio on/off - Default is OFF (muted)
 - [x] Fullscreen on/off
 - [x] Support PiP (Picture-in-Picture)
 - [x] Support FairPlay DRM
+- [x] Debug view - Bitrate / Framerate / Resolution / TrailerUrl / PlaybackItemUrl 
 
 ## Requirements
 - iOS 10 or above
 - Xcode 12 or above
 
 ## Installation
-### SwiftPM
+### Swift Package Manager
+Add a package dependency to your Xcode project, select File > Swift Packages > Add Package Dependency and enter repository URL `https://github.com/AbeWang/TrailerPlayer`.
+Then import `import TrailerPlayer`.
 
 ### CocoaPods
-Add a pod entry to your Podfile 
-`pod 'TrailerPlayer'`
+Add a pod entry to your Podfile :
+```ruby
+target 'YourApp' do
+    pod 'TrailerPlayer', '~> 1.4.5'
+    ...
+```
+Install pods
+```
+$ pod install
+```
+And then import `import TrailerPlayer`.
+
 ### Carthage
-Add TrailerPlayer to your Cartfile `github "AbeWang/TrailerPlayer"`
+Add TrailerPlayer to your Cartfile : 
+```
+github "AbeWang/TrailerPlayer" ~> 1.4.5
+```
+Run `carthage update`
+```
+$ carthage update --use-xcframework
+```
+Add the TrailerPlayer xcframework to your project. (XCFramework will not require the usage of the carthage copy-frameworks script anymore.)
 
 ## How to use
 ```swift
@@ -47,32 +68,28 @@ let item = TrailerPlayerItem(
 playerView.playbackDelegate = self
 playerView.set(item: item)
 ```
-#### TrailerPlayerItem settings
+### TrailerPlayerItem settings
 ```swift
-required public init(url: URL? = nil,                // trailer url
-                     thumbnailUrl: URL? = nil,       // thumbnail url
-                     thumbnailImage: UIImage? = nil, // 若已有 thumbnail 圖片時，可直接提供 
-                     autoPlay: Bool = true,          // 自動播放，否則自行呼叫 play()
-                     autoReplay: Bool = false,       // 播放完畢後，是否自動重新播放
-                     mute: Bool = true,              // 預設播放為靜音
-                     isDRMContent: Bool = false)     // 是否為 DRM 內容
+required public init(url: URL? = nil,                
+                     thumbnailUrl: URL? = nil,       
+                     thumbnailImage: UIImage? = nil, 
+                     autoPlay: Bool = true,          
+                     autoReplay: Bool = false,       
+                     mute: Bool = true,              
+                     isDRMContent: Bool = false)     
 ```
-#### TrailerPlayerPlaybackDelegate
+### TrailerPlayerPlaybackDelegate
 ```swift
-// 當 player 播放時，可透過此 callback 更新播放時間
 func trailerPlayer(_ player: TrailerPlayer, didUpdatePlaybackTime time: TimeInterval)
-// 當 player 狀態改變時，可透過此 callback 更新控制面板上的播放狀態
 func trailerPlayer(_ player: TrailerPlayer, didChangePlaybackStatus status: TrailerPlayerPlaybackStatus)
-// 當 player item 狀態變為 readyToPlay 時觸發
 func trailerPlayerPlaybackReady(_ player: TrailerPlayer)
-// 當 player 播放發生錯誤時觸發
 func trailerPlayer(_ player: TrailerPlayer, playbackDidFailed error: TrailerPlayerPlaybackError)
 ```
-#### [Optional] Support PiP 
+### [Optional] Support PiP 
 ```swift
 playerView.enablePictureInPicture = true
 ```
-#### [Optional] Panel settings
+### [Optional] Panel settings
 ```swift
 let controlPanel: UIView = ... // your custom control panel
 playerView.addControlPanel(controlPanel)
@@ -80,13 +97,13 @@ playerView.addControlPanel(controlPanel)
 let replayPanel: UIView = ... // your custom replay panel
 playerView.addReplayPanel(replayPanel)
 ```
-#### [Optional] Debug view
+### [Optional] Debug view
 ![IMG_0012](https://user-images.githubusercontent.com/1064039/142608823-8ca6df18-f804-4605-bf16-fec677696d51.jpg)
 ```swift
 let playerView = TrailerPlayerView()
 playerView.enableDebugView = true
 ```
-#### [Optional] Support DRM
+### [Optional] Support DRM
 ```swift
 let playerView = TrailerPlayerView()
 let item = TrailerPlayerItem(
@@ -109,7 +126,7 @@ extension ViewController: TrailerPlayerDRMDelegate {
     }
 }
 ```
-#### TrailerPlayerDRMDelegate
+### TrailerPlayerDRMDelegate
 ```swift
 // CKC(Content Key Context) URL
 func ckcUrl(for player: TrailerPlayer) -> URL
@@ -120,3 +137,6 @@ func contentId(for player: TrailerPlayer) -> String?
 // Optional: HTTP header fields for CKC request
 func ckcRequestHeaderFields(for player: TrailerPlayer) -> [(headerField: String, value: String)]?
 ```
+
+## Detailed Example
+A more detailed example can be found here https://github.com/AbeWang/TrailerPlayer/tree/main/Example, or open `TrailerPlayer.xcodeproj`
