@@ -19,7 +19,7 @@ Icons by Icons8 (https://icons8.com)
 - [x] For the content with trailers :
 - In the beginning, the thumbnail will be displayed directly. After the trailer is loading completed, the trailer will be auto-played from the beginning, and at this moment, the thumbnail will be hidden. After the trailer completes playback, the thumbnail image will display (Or show the replay panel if you provided it).
 - [x] Customize layout for the control panel and replay panel
-- [x] Basic functions - Play / Pause / Seek / Replay
+- [x] Basic functions - Play / Pause / Stop / Seek / Replay
 - [x] Audio on/off - Default is OFF (muted)
 - [x] Fullscreen on/off
 - [x] Support PiP (Picture-in-Picture)
@@ -39,7 +39,7 @@ Then import `import TrailerPlayer`.
 Add a pod entry to your Podfile :
 ```ruby
 target 'YourApp' do
-    pod 'TrailerPlayer', '~> 1.4.5'
+    pod 'TrailerPlayer', '~> 1.4.6'
     ...
 ```
 Install pods
@@ -51,7 +51,7 @@ And then import `import TrailerPlayer`.
 ### Carthage
 Add TrailerPlayer to your Cartfile : 
 ```
-github "AbeWang/TrailerPlayer" ~> 1.4.5
+github "AbeWang/TrailerPlayer" ~> 1.4.6
 ```
 Run `carthage update`
 ```

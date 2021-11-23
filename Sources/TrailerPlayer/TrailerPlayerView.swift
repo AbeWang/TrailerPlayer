@@ -131,6 +131,15 @@ public extension TrailerPlayerView {
     
     func pause() { player?.pause() }
     
+    func stop() {
+        let item = TrailerPlayerItem(thumbnailUrl: currentPlayingItem?.thumbnailUrl,
+                                     thumbnailImage: currentPlayingItem?.thumbnailImage)
+        
+        reset()
+        currentPlayingItem = item
+        setupThumbnail()
+    }
+    
     func replay() {
         switchToPlayerView()
         player?.replay()
@@ -317,6 +326,9 @@ private extension TrailerPlayerView {
         pipController = nil
         
         thumbnailView.image = nil
+        
+        playerView.isHidden = true
+        debugInfoLabel.isHidden = true
         
         player?.pause()
         player?.replaceCurrentItem(with: nil)

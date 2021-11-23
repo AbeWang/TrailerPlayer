@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'TrailerPlayer'
-  s.version          = '1.4.5'
+  s.version          = '1.4.6'
   s.summary          = 'iOS video player for trailer.'
   s.description      = <<-DESC
                        iOS video player for trailer. 
