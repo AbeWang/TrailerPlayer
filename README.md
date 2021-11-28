@@ -55,7 +55,7 @@ github "AbeWang/TrailerPlayer" ~> 1.4.6
 ```
 Run `carthage update`
 ```
-$ carthage update --use-xcframework
+$ carthage update --use-xcframeworks
 ```
 Add the TrailerPlayer xcframework to your project. (XCFramework will not require the usage of the carthage copy-frameworks script anymore.)
 
