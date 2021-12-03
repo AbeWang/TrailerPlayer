@@ -39,7 +39,7 @@ Then import `import TrailerPlayer`.
 Add a pod entry to your Podfile :
 ```ruby
 target 'YourApp' do
-    pod 'TrailerPlayer', '~> 1.4.6'
+    pod 'TrailerPlayer', '~> 1.4.7'
     ...
 ```
 Install pods
@@ -51,7 +51,7 @@ And then import `import TrailerPlayer`.
 ### Carthage
 Add TrailerPlayer to your Cartfile : 
 ```
-github "AbeWang/TrailerPlayer" ~> 1.4.6
+github "AbeWang/TrailerPlayer" ~> 1.4.7
 ```
 Run `carthage update`
 ```
