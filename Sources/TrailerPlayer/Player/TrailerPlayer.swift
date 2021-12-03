@@ -70,6 +70,13 @@ public extension TrailerPlayer {
     }
     
     func toggleMute() { isMuted = !isMuted }
+    
+    override func replaceCurrentItem(with item: AVPlayerItem?) {
+        if currentItem != nil {
+            reset()
+        }
+        super.replaceCurrentItem(with: item)
+    }
 }
 
 private extension TrailerPlayer {
