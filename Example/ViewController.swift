@@ -28,13 +28,17 @@ class ViewController: UIViewController {
         return view
     }()
     
+    private let autoPlay = false
+    private let autoReplay = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .white
         
         view.addSubview(playerView)
-        playerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        playerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        playerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         playerView.heightAnchor.constraint(equalTo: playerView.widthAnchor, multiplier: 0.65).isActive = true
         if #available(iOS 11.0, *) {
             playerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
@@ -45,12 +49,23 @@ class ViewController: UIViewController {
         controlPanel.delegate = self
         playerView.addControlPanel(controlPanel)
         
-        replayPanel.delegate = self
-        playerView.addReplayPanel(replayPanel)
+        if !autoReplay {
+            replayPanel.delegate = self
+            playerView.addReplayPanel(replayPanel)
+        }
+        
+        if !autoPlay {
+            let button = UIButton()
+            button.tintColor = .white
+            button.setImage(UIImage(named: "play")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            playerView.manualPlayButton = button
+        }
         
         let item = TrailerPlayerItem(
             url: URL(string: "https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/master.m3u8"),
-            thumbnailUrl: URL(string: "https://upload.cc/i1/2021/10/04/qGNK3M.png"))
+            thumbnailUrl: URL(string: "https://upload.cc/i1/2021/10/04/qGNK3M.png"),
+            autoPlay: autoPlay,
+            autoReplay: autoReplay)
         playerView.playbackDelegate = self
         playerView.set(item: item)
     }

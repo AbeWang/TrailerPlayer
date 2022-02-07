@@ -39,7 +39,7 @@ Then import `import TrailerPlayer`.
 Add a pod entry to your Podfile :
 ```ruby
 target 'YourApp' do
-    pod 'TrailerPlayer', '~> 1.4.7'
+    pod 'TrailerPlayer', '~> 1.4.8'
     ...
 ```
 Install pods
@@ -51,7 +51,7 @@ And then import `import TrailerPlayer`.
 ### Carthage
 Add TrailerPlayer to your Cartfile : 
 ```
-github "AbeWang/TrailerPlayer" ~> 1.4.7
+github "AbeWang/TrailerPlayer" ~> 1.4.8
 ```
 Run `carthage update`
 ```
@@ -84,6 +84,15 @@ func trailerPlayer(_ player: TrailerPlayer, didUpdatePlaybackTime time: TimeInte
 func trailerPlayer(_ player: TrailerPlayer, didChangePlaybackStatus status: TrailerPlayerPlaybackStatus)
 func trailerPlayerPlaybackReady(_ player: TrailerPlayer)
 func trailerPlayer(_ player: TrailerPlayer, playbackDidFailed error: TrailerPlayerPlaybackError)
+```
+### [Optional] Manual Play 
+```swift
+let item = TrailerPlayerItem(
+            url: URL(string: "..."),
+            thumbnailUrl: URL(string: "..."),
+            autoPlay: false)
+playerView.set(item: item)
+playerView.manualPlayButton = ... // your custom button
 ```
 ### [Optional] Support PiP 
 ```swift

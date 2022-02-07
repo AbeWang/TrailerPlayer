@@ -30,6 +30,13 @@ public class TrailerPlayerView: UIView {
         set { setDebugView(enabled: newValue) }
     }
     
+    public var manualPlayButton: UIButton? {
+        didSet {
+            manualPlayButton?.translatesAutoresizingMaskIntoConstraints = false
+            manualPlayButton?.addTarget(self, action: #selector(didTapManualPlay), for: .touchUpInside)
+        }
+    }
+    
     @AutoLayout
     public private(set) var containerView: UIView = {
         let view = UIView()
@@ -127,7 +134,10 @@ public extension TrailerPlayerView {
     
     func toggleMute() { player?.toggleMute() }
     
-    func play() { player?.play() }
+    func play() {
+        playerView.isHidden = false
+        player?.play()
+    }
     
     func pause() { player?.pause() }
     
@@ -279,7 +289,16 @@ private extension TrailerPlayerView {
         player?.isMuted = item.mute
         player?.playbackReadyCallback = { [weak self] in
             guard let self = self, !self.trailerFinished else { return }
-            self.playerView.isHidden = false
+            if item.autoPlay {
+                self.play()
+            } else {
+                self.loadingIndicator.stopAnimating()
+                
+                guard let playButton = self.manualPlayButton else { return }
+                self.containerView.addSubview(playButton)
+                playButton.centerXAnchor.constraint(equalTo: self.containerView.centerXAnchor).isActive = true
+                playButton.centerYAnchor.constraint(equalTo: self.containerView.centerYAnchor).isActive = true
+            }
         }
         player?.isBufferingCallback = { [weak self] buffering in
             guard let self = self else { return }
@@ -314,8 +333,6 @@ private extension TrailerPlayerView {
         
         setPictureInPicture(enabled: pipEnabled)
         setDebugView(enabled: debugViewEnabled)
-        
-        if item.autoPlay { play() }
     }
     
     func reset() {
@@ -432,6 +449,11 @@ private extension TrailerPlayerView {
     @objc func onTapGestureTapped() {
         guard controlPanel != nil else { return }
         controlPanelAnimation(isShow: !isControlPanelShowing)
+    }
+    
+    @objc func didTapManualPlay() {
+        manualPlayButton?.removeFromSuperview()
+        play()
     }
 }
 
