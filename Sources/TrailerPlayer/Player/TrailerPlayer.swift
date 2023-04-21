@@ -24,11 +24,11 @@ public class TrailerPlayer: AVPlayer {
     
     public private(set) var isDRMContent = false
     
-    var debugEnabled = false
+    public var debugEnabled = false
     
-    var playbackReadyCallback: (() -> Void)?
-    var isBufferingCallback: ((Bool) -> Void)?
-    var debugInfoCallback: ((TrailerPlayerDebugInfo) -> Void)?
+    public var playbackReadyCallback: (() -> Void)?
+    public var isBufferingCallback: ((Bool) -> Void)?
+    public var debugInfoCallback: ((TrailerPlayerDebugInfo) -> Void)?
     
     public var duration: TimeInterval {
         guard let time = currentItem?.duration else { return 0.0 }
