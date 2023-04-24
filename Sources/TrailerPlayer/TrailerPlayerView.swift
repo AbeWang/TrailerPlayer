@@ -12,6 +12,8 @@ public class TrailerPlayerView: UIView {
     public weak var playbackDelegate: TrailerPlayerPlaybackDelegate?
     public weak var DRMDelegate: TrailerPlayerDRMDelegate?
     
+    public var player: TrailerPlayer?
+    
     public var isMuted: Bool { player?.isMuted ?? true }
     
     public var canUseFullscreen: Bool { player != nil }
@@ -80,8 +82,8 @@ public class TrailerPlayerView: UIView {
         return label
     }()
     
-    private var player: TrailerPlayer?
     private var playerLayer: AVPlayerLayer?
+    
     private var currentPlayingItem: TrailerPlayerItem?
     private var shouldResumePlay = false
     private var trailerFinished = false
